@@ -1,0 +1,47 @@
+
+====================================================================================================
+CURSO MYSQL FUNDAMENTOS - Instalação
+====================================================================================================
+
+
+Instalando MySQL 5.7 no Ubuntu 18.04
+----------------------------------------------------------------------------------------------------
+
+- Atualizar base APT
+
+  $ sudo apt update
+  $ sudo apt upgrade
+
+- Instalar MySQL
+
+  $ sudo apt install mysql-server-5.7
+
+- Obter a versão do MySQL recem instalado
+
+  $ mysql --version
+
+- Acessar localmente servidor do MySQL
+
+  $ mysql -u root -proot
+
+- Visualizar bancos de dados existentes
+
+  mysql> show databases;
+
+- Sair do servidor MySQL
+
+  mysql> quit;
+
+- Parar o servidor MySQL
+
+  $ sudo service mysql stop
+
+- Iniciar o servidor MySQL
+
+  $ sudo service mysql start
+
+- Obter o status do servidor MySQL
+
+  $ sudo service mysql status
+
+
