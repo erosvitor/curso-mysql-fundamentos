@@ -1,5 +1,5 @@
 ## Sobre
-O projeto é um curso sobre os fundamentos do banco de dados MySQL.
+O projeto contém tópicos sobre os fundamentos do banco de dados relacional MySQL.
 
 ## Tópicos disponíveis
 * Introdução ao curso
