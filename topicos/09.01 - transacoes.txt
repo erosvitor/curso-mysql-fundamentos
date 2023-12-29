@@ -1,0 +1,114 @@
+====================================================================================================
+CURSO MYSQL FUNDAMENTOS - TRANSAÇÕES
+====================================================================================================
+
+
+Banco de dados exemplo
+----------------------------------------------------------------------------------------------------
+Para este tópico será utilizado o banco de dados 'controlebancario'.
+
+
+Descrição
+----------------------------------------------------------------------------------------------------
+Uma transação é uma operação que garante a execução completa ou o cancelamento completo de um 
+conjunto de instruções SQL.
+
+
+ACID
+----------------------------------------------------------------------------------------------------
+A palavra ACID é a junção das primeiras letras das palavras Atomicidade, Consistência, Isolamento e 
+Durabilidade.
+
+Atomicidade: significa que todas as instruções, juntas e de forma única, devem ser executadas por 
+completo ou devem ser canceladas por completo.
+
+Consistência: significa que os dados devem estar sempre consistente entre as tabelas, ou seja, um 
+relacionamento entre duas tabelas não pode ser quebrado devido a falta ou perda de parte dos dados.
+
+Isolamento: significa que os dados usados na transação não podem sofrer alterações por outra transação.
+
+Durabilidade: significa que as alterações efetuadas pela transação não serão perdidas após o término 
+da transação.
+
+
+AUTOCOMMIT
+----------------------------------------------------------------------------------------------------
+O 'autocommit' é uma variável global do MySQL que, por padrão, define que todos os comandos SQL serão 
+efetivados automaticamente após a sua execução.
+
+Para visualizar o conteudo da variável 'autocommit', utilizar o comando abaixo.
+
+  SELECT @@autocommit;
+
+Para alterar o valor da variável 'autocommit', utilizar o comando abaixo.
+
+  SET session autocommit=0;
+  SET autocommit=0;
+
+  Obs: A partir da versão 5.5.8, é possível definir o autocommit = 0 de forma global na seção [mysqld] 
+  do arquivo de configuração my.cnf.
+
+
+Comandos para controle de transação
+----------------------------------------------------------------------------------------------------
+- START TRANSACTION
+- COMMIT
+- ROLLBACK
+- SAVEPOINT <nome>
+- ROLLBACK TO SAVEPOINT <nome>
+
+
+Comandos START TRANSACTION e COMMIT
+----------------------------------------------------------------------------------------------------
+O comando 'start transaction' inicia uma transação e o comando 'commit' finaliza a transação, 
+garantindo que todos os comandos sejam efetivados.
+
+Exemplo
+
+  START TRANSACTION;
+
+  INSERT INTO <nome-tabela1> ...
+  UPDATE <nome-tabela2> ...
+
+  COMMIT;
+
+
+Comando ROLLBACK
+----------------------------------------------------------------------------------------------------
+O comando 'rollback' desfaz as alterações efetuadas pelos comandos.
+
+Exemplo
+
+  DECLARE excessao SMALLINT DEFAULT 0;
+  DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET excessao = 1;
+    
+  START TRANSACTION;
+
+  INSERT INTO ...;
+    
+  SELECT ...;
+    
+  INSERT INTO ...;
+    
+  IF excessao = 1 THEN
+    ROLLBACK;
+  ELSE
+    COMMIT;
+  END IF;
+
+
+Comandos SAVEPOINT e ROLLBACK TO SAVEPOINT
+----------------------------------------------------------------------------------------------------
+O comando 'savepoint' define um ponto para que o comando 'rollback savepoint' possa desfazer as 
+alterações até o ponto definido pelo 'savepoint'.
+
+Exemplo
+
+  START TRANSACTION;
+  comandos SQL...
+  SAVEPOINT <nome-ponto>;
+  comandos SQL...
+  ROLLBACK TO SAVEPOINT <nome-ponto>;
+  comandos SQL...
+  COMMIT;
+

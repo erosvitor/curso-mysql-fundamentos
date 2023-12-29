@@ -1,0 +1,129 @@
+====================================================================================================
+CURSO MYSQL FUNDAMENTOS - TRIGGERS
+====================================================================================================
+
+
+Banco de dados exemplo
+----------------------------------------------------------------------------------------------------
+CREATE DATABASE logs;
+
+USE logs;
+
+CREATE TABLE funcionarios
+(
+  codigo INT NOT NULL AUTO_INCREMENT,
+  nome VARCHAR(60) NOT NULL,
+  telefone CHAR(14) NOT NULL,
+  PRIMARY KEY (codigo)
+);
+
+CREATE TABLE logs
+(
+  usuario VARCHAR(20) NOT NULL,
+  datahora DATETIME NOT NULL,
+  evento VARCHAR(200) NOT NULL
+); 
+
+
+Definição
+----------------------------------------------------------------------------------------------------
+Uma trigger é um bloco de comandos SQL que é executado quando uma operação for realizada na tabela.
+
+
+Operações
+----------------------------------------------------------------------------------------------------
+- INSERT
+- UPDATE
+- DELETE
+
+
+BEFORE e AFTER
+----------------------------------------------------------------------------------------------------
+Uma trigger pode ser programada para ser executada antes (BEFORE) ou depois (AFTER) de uma das 
+operações possiveis sobre uma tabela.
+
+
+Operadores OLD e NEW
+----------------------------------------------------------------------------------------------------
+Uma trigger disponibiliza os operadores OLD e NEW para que dados alterados possam ser acessados 
+dentro da trigger.
+
+Os operadores OLD e NEW estarão disponíveis conforme o tipo da operação.
+
+INSERT: o operador NEW estará presente e OLD não
+DELETE: o operador OLD estará presente e NEW não
+UPDATE: ambos os operadores OLD e NEW estarão presentes
+
+
+Criando uma trigger
+----------------------------------------------------------------------------------------------------
+DELIMITER $$
+CREATE TRIGGER <nome-trigger> <BEFORE|AFTER> <INSERT|UPDATE|DELETE> 
+ON <nome-tabela> 
+FOR EACH ROW
+BEGIN
+  <comandos>
+END $$
+DELIMITER ;
+
+Exemplo
+
+  DELIMITER $$
+  CREATE TRIGGER tgr_funcionarios_insert AFTER INSERT 
+  ON funcionarios
+  FOR EACH ROW
+  BEGIN
+    DECLARE evento VARCHAR(200);
+
+    SET evento = CONCAT('Inseriu os dados: ', NEW.nome, ', ', NEW.telefone);
+
+    INSERT INTO logs VALUES (CURRENT_USER(), NOW(), evento);
+    
+  END $$
+  DELIMITER ;
+
+  
+  INSERT INTO funcionarios VALUES (1, 'Fulano da Silva', '998887676');
+
+
+  SELECT * FROM logs;
+
+
+Excluindo uma trigger
+----------------------------------------------------------------------------------------------------
+DROP TRIGGER <nome-trigger>;
+
+Exemplo
+
+  DROP TRIGGER tgr_funcionarios_insert;
+
+
+====================================================================================================
+EXERCICIOS
+====================================================================================================
+
+Exercicio - Controle Estoque
+----------------------------------------------------------------------------------------------------
+Criar um banco de dados para controlar o estoque de produtos de um escritório.
+
+Instruções
+
+- Executar o script 'estoque.sql'
+
+- Criar uma trigger para a tabela 'pedidos_itens' para que toda vez que um produto for inserido na 
+  tabela, a quantidade em estoque do produto seja atualizada.
+
+
+====================================================================================================
+RESPOSTAS EXERCICIOS
+====================================================================================================
+
+Exercicio - Controle Estoque
+----------------------------------------------------------------------------------------------------
+- Executar o script 'estoque.sql'
+
+- Criar uma trigger para a tabela 'pedidos_itens' para que toda vez que um produto for inserido na 
+  tabela, a quantidade em estoque do produto seja atualizada.
+
+  ...
+

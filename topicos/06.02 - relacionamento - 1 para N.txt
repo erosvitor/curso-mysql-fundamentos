@@ -1,0 +1,274 @@
+====================================================================================================
+CURSO MYSQL FUNDAMENTOS - RELACIONAMENTO 1 para N
+====================================================================================================
+
+
+Banco de dados exemplo
+----------------------------------------------------------------------------------------------------
+Para este tópico será utilizado um novo banco de dados chamado 'cursos' que sera criado logo abaixo.
+
+
+Definição
+----------------------------------------------------------------------------------------------------
+O relacionamento 1 para N ocorre quando um registro de uma tabela se relaciona com vários outros
+registros de uma outra tabela.
+
+Exemplo
+
+  Cursos
+    Nome                  Duração   Disciplina                  Carga Horária
+    Análise de Sistemas   4 anos    Comunicação e Expressão     40
+    Análise de Sistemas   4 anos    Estatística                 40
+    Análise de Sistemas   4 anos    Fundamentos Computação      40
+    Análise de Sistemas   4 anos    Lógica Programação          80
+
+
+  Aplicando o relacionamento 1 para N
+
+    Cursos
+      Nome                  Duração
+      Análise de Sistemas   4 anos
+
+    Disciplinas
+      Disciplina                Carga Horária
+      Comunicação e Expressão   40
+      Estatística               40
+      Fundamentos Computação    40
+      Lógica Programação        80   
+
+
+Chave estrangeira
+----------------------------------------------------------------------------------------------------
+O relacionamento 1 para N entre duas tabelas é estabelecido da seguinte maneira:
+- Na tabela 1 define-se um campo como chave primária
+- Na tabela 2 define-se um campo como chave primária. Caso não exista um candidato,
+  adicionar um campo extra do tipo numérico inteiro, auto-incrementável
+- Na tabela 2 adiciona-se um campo extra sendo do mesmo tipo e tamanho do campo
+  que foi definido como chave primária na tabela 1
+- O campo adicionado na segunda tabela chama-se chave estrangeira 
+
+
+    Cursos
+      Código    Nome                  Duração
+      1         Análise de Sistemas   4 anos
+
+    Disciplinas
+      Código Disciplina   Código Curso    Disciplina                Carga Horária
+      1                   1               Comunicação e Expressão   40
+      2                   1               Estatística               40
+      3                   1               Fundamentos Computação    40
+      4                   1               Lógica Programação        80   
+
+
+Definindo o código SQL
+----------------------------------------------------------------------------------------------------
+CREATE DATABASE cursos;
+
+USE cursos;
+
+CREATE TABLE cursos
+(
+  codigo INT NOT NULL AUTO_INCREMENT,
+  nome VARCHAR(40) NOT NULL,
+  duracao CHAR(20) NOT NULL,
+  CONSTRAINT pk_cursos PRIMARY KEY (codigo)
+);
+
+CREATE TABLE cursos_disciplinas
+(
+  codigo INT NOT NULL AUTO_INCREMENT,
+  codigo_curso INT NOT NULL,
+  nome VARCHAR(40) NOT NULL,
+  carga_horaria TINYINT NOT NULL,
+  CONSTRAINT pk_cursos_disciplinas PRIMARY KEY (codigo),
+  CONSTRAINT fk_cursos_disciplinas_cursos FOREIGN KEY (codigo_curso) 
+  REFERENCES cursos(codigo) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+
+Inserindo dados
+----------------------------------------------------------------------------------------------------
+Inserir primeiramente na tabela 1
+
+  INSERT INTO cursos VALUES (1, 'Análise de Sistemas', '4 anos'); 
+  INSERT INTO cursos VALUES (2, 'Ciência da Computação', '5 anos'); 
+
+Depois inserir na tabela 2 usando o código do curso
+
+  INSERT INTO cursos_disciplinas VALUES (1, 1, 'Comunicação e Expressão', 40);
+  INSERT INTO cursos_disciplinas VALUES (2, 1, 'Estatística', 40);
+  INSERT INTO cursos_disciplinas VALUES (3, 1, 'Fundamentos Computação', 40);
+  INSERT INTO cursos_disciplinas VALUES (4, 1, 'Lógica Programação', 80);
+
+
+Selecionando dados
+----------------------------------------------------------------------------------------------------
+SELECT <campos> FROM <nome-tabela1> INNER JOIN <nome-tabela2> ON <campo-tabela2 = campo-tabela1>;
+
+Exemplo
+
+  SELECT c.nome, cd.nome, cd.carga_horaria FROM cursos c
+  INNER JOIN cursos_disciplinas cd ON (cd.codigo_curso = c.codigo);
+
+
+LEFT JOIN
+----------------------------------------------------------------------------------------------------
+SELECT <campos> FROM <nome-tabela1> LEFT JOIN <nome-tabela2> ON <campo-tabela2 = campo-tabela1>;
+
+Exemplo
+
+  SELECT c.nome, cd.nome, cd.carga_horaria FROM cursos c
+  LEFT JOIN cursos_disciplinas cd ON (cd.codigo_curso = c.codigo);
+
+
+Função COUNT
+----------------------------------------------------------------------------------------------------
+Contando a quantidade de registros na tabela secundária.
+
+Exemplo
+
+  SELECT c.nome AS Curso, COUNT(cd.codigo) AS 'Total Disciplinas'
+  FROM cursos c
+  LEFT JOIN cursos_disciplinas cd ON (cd.codigo_curso = c.codigo)
+  GROUP BY (c.nome);
+
+
+Excluindo dados
+----------------------------------------------------------------------------------------------------
+DELETE FROM <nome-tabela> WHERE <campo-chave> = <valor>;
+
+Exemplo
+
+  DELETE FROM cursos WHERE codigo = 1;
+
+
+====================================================================================================
+EXERCÍCIOS
+====================================================================================================
+
+Exercício 01 - Cadastro Funcionarios
+----------------------------------------------------------------------------------------------------
+Utilizando o relacionamento 1 para N, modelar um banco de dados para cadastrar funcionários de uma 
+determinada empresa. Os dados levantados inicialmente foram:
+
+  Nome funcionario, Cargo, Telefone, Nome dependente 1, Genero dependente 1,
+  Nome dependente 2, Genero dependente 2
+
+Instruções
+
+- Aplicar o relacionamento 1 para N de tal modo que os dados dos dependentes fiquem separados dos 
+  dados do funcionário.
+
+- Definir a chave primaria e a chave estrangeira para cada uma as tabelas
+
+- Definir nomes para a chave primária e para a chave estrangeira
+
+- Criar um banco de dados chamado 'funcionarios'
+
+- Montar os scripts SQL para cada uma das tabelas
+
+- Executar os scripts SQL para que cada tabela seja criada no banco de dados
+
+- Criar uma instrução SQL INSERT para inserir um funcionário com 2 dependentes
+
+- Criar uma instrução SQL INSERT para inserir um funcionário sem dependentes
+
+- Criar uma instrução SQL INSERT para inserir um funcionário com 1 dependente
+
+- Montar uma instrução SQL SELECT para listar o código e o nome do funcionário e o nome dos 
+  dependentes;
+
+
+====================================================================================================
+RESPOSTAS EXERCÍCIOS
+====================================================================================================
+
+Exercício 01 - Cadastro Funcionarios
+----------------------------------------------------------------------------------------------------
+
+- Aplicar o relacionamento 1 para N de tal modo que os dados dos dependentes fiquem separados dos 
+  dados do funcionário.
+
+  Funcionarios
+    Nome, Cargo, Telefone
+
+  Dependentes
+    Nome, Genero
+
+
+- Definir a chave primaria e a chave estrangeira para cada uma as tabelas
+
+  Funcionarios
+    Codigo, Nome, Cargo, Telefone
+
+  Dependentes
+    Codigo, Codigo Funcionario, Nome, Genero
+
+
+- Definir nomes para a chave primária e para a chave estrangeira
+
+  pk_funcionarios
+  pk_funcionarios_dependentes
+  fk_funcionarios_dependentes_funcionarios
+
+
+- Criar um banco de dados chamado 'funcionarios'
+ 
+  CREATE DATABASE funcionarios;
+
+
+- Montar os scripts SQL para cada uma das tabelas
+
+  CREATE TABLE funcionarios
+  (
+    codigo INT NOT NULL AUTO_INCREMENT,
+    nome VARCHAR(60) NOT NULL,
+    cargo CHAR(20) NOT NULL,
+    telefone CHAR(14) NOT NULL,
+    CONSTRAINT pk_funcionarios PRIMARY KEY (codigo)
+  );
+
+  CREATE TABLE funcionarios_dependentes
+  (
+    codigo INT NOT NULL AUTO_INCREMENT,
+    codigo_funcionario INT NOT NULL,
+    nome VARCHAR(60) NOT NULL,
+    genero CHAR(1) NOT NULL,
+    CONSTRAINT pk_funcionarios_dependentes PRIMARY KEY (codigo),
+    CONSTRAINT fk_funcionarios_dependentes_funcionarios 
+    FOREIGN KEY (codigo_funcionario) REFERENCES funcionarios (codigo) ON DELETE CASCADE ON UPDATE CASCADE
+  );
+  
+- Executar os scripts SQL para que cada tabela seja criada no banco de dados
+
+
+- Criar uma instrução SQL INSERT para inserir um funcionário com 2 dependentes
+
+  INSERT INTO funcionarios VALUES (1, 'Fulano da Silva', 'Operador CNC', '99888-0909');
+  INSERT INTO funcionarios_dependentes VALUES (1, 1, 'Anacleto Silveira', 'M');
+  INSERT INTO funcionarios_dependentes VALUES (2, 1, 'Matilde Peres', 'F');
+
+
+- Criar uma instrução SQL INSERT para inserir um funcionário sem dependentes
+
+  INSERT INTO funcionarios VALUES (2, 'Beltrano Gomes', 'Auxiliar Administrativo', '3255-4556');
+
+
+- Criar uma instrução SQL INSERT para inserir um funcionário com 1 dependente
+
+  INSERT INTO funcionarios VALUES (3, 'Siclano Gonçalves', 'Gerente de Vendas', '99333-7979');
+  INSERT INTO funcionarios_dependentes VALUES (3, 3, 'Pedrusco Alves', 'M');
+
+
+- Montar uma instrução SQL SELECT para listar o código e o nome do funcionário e
+  o nome dos dependentes;
+
+  SELECT
+    f.codigo AS Código,
+    f.nome AS Funcionário,
+    fd.nome AS Dependente
+  FROM
+    funcionarios f
+  INNER JOIN 
+    funcionarios_dependentes fd ON (fd.codigo_funcionario = f.codigo);
+

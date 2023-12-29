@@ -1,0 +1,96 @@
+====================================================================================================
+CURSO MYSQL FUNDAMENTOS - ALTERANDO TABELAS
+====================================================================================================
+
+
+Banco de dados exemplo
+----------------------------------------------------------------------------------------------------
+Para este tópico será utilizado o banco de dados AGENDA (criado no tópico 02.01)
+
+
+Alterando tabelas
+----------------------------------------------------------------------------------------------------
+- Adicionar novo campo
+
+  mysql> ALTER TABLE <nome-tabela> ADD <campo>;
+  
+  Exemplo
+  
+    mysql> ALTER TABLE contatos ADD cpf CHAR(14);
+
+
+- Alterar um determinado campo
+
+  mysql> ALTER TABLE <nome-tabela> CHANGE <nome-campo> <novo-nome-campo> <tipo-dado>;
+
+  Exemplo
+
+    mysql> ALTER TABLE contatos CHANGE cpf cpf CHAR(11); 
+
+
+- Remover um determinado campo
+
+  mysql> ALTER TABLE <nome-tabela> DROP <nome-campo>;
+
+  Exemplo
+
+    mysql> ALTER TABLE contatos DROP cpf; 
+
+
+- Alterar o nome da tabela
+
+  mysql> RENAME TABLE <nome-tabela> TO <novo-nome-tabela>;
+  
+  Exemplo
+
+    mysql> RENAME TABLE contatos TO pessoas;
+
+
+====================================================================================================
+EXERCÍCIOS
+====================================================================================================
+
+Exercício 01 – Alterações no banco de dados Alunos (criado na aula 02.01)
+----------------------------------------------------------------------------------------------------
+Alterar a estrutura da tabela 'alunos' conforme as instruções abaixo.
+
+CREATE TABLE alunos
+(
+  codigo INT NOT NULL AUTO_INCREMENT,
+  nome VARCHAR(80) NOT NULL,
+  cpf CHAR(11) NOT NULL,
+  sexo CHAR(1) NOT NULL,
+  PRIMARY KEY (codigo)
+);
+
+Instruções:
+
+- O campo 'cpf' deve aceitar 14 caracteres e não apenas 11 caracteres
+- Alterar o nome do campo 'sexo' para 'genero'
+- Adicionar o campo 'rg'
+- Adicionar o campo 'uf' para armazenar a sigla do estado federativo
+- O campo 'genero' não pode ser obrigatório
+
+
+Exercício 02 – Nome do banco de dados
+----------------------------------------------------------------------------------------------------
+È possível alterar o nome do banco de dados?
+
+
+====================================================================================================
+RESPOSTAS EXERCÍCIOS
+====================================================================================================
+
+Exercício 01 – Alterações no banco de dados Alunos
+----------------------------------------------------------------------------------------------------
+ALTER TABLE alunos CHANGE cpf cpf CHAR(14) NOT NULL;
+ALTER TABLE alunos CHANGE sexo genero CHAR(1) NOT NULL;
+ALTER TABLE alunos ADD rg CHAR(11) NOT NULL;
+ALTER TABLE alunos ADD uf CHAR(2) NOT NULL;
+ALTER TABLE alunos CHANGE genero genero CHAR(1) NULL;
+
+
+Exercício 02 – Nome do banco de dados
+----------------------------------------------------------------------------------------------------
+Não
+

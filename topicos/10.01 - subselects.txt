@@ -1,0 +1,257 @@
+====================================================================================================
+CURSO MYSQL FUNDAMENTOS - SUBSELECTS
+====================================================================================================
+
+
+Banco de dados exemplo
+----------------------------------------------------------------------------------------------------
+Para este tópico criar um banco de dados chamado 'subselects'.
+
+
+Descrição
+----------------------------------------------------------------------------------------------------
+Um subselect é uma instrução SELECT dentro de outro comando SQL.
+
+
+Situações
+----------------------------------------------------------------------------------------------------
+- Inserts com resultados de um SELECT
+- Select dentro da cláusula WHERE de um SELECT
+- Select como campo de um SELECT
+- Select dentro da cláusula FROM
+
+
+Inserts com resultados de um SELECT
+----------------------------------------------------------------------------------------------------
+...
+
+
+Select dentro da cláusula WHERE de um SELECT
+----------------------------------------------------------------------------------------------------
+...
+
+
+Select como campo de um SELECT
+----------------------------------------------------------------------------------------------------
+...
+
+
+Select dentro da cláusula FROM
+----------------------------------------------------------------------------------------------------
+...
+
+
+====================================================================================================
+EXERCÍCIOS
+====================================================================================================
+
+Exercício 01 - Locadora Veiculos
+----------------------------------------------------------------------------------------------------
+
+Instruções
+
+- Executar os scripts 'locadoraveiculos-mysql-create.sql' e 'locadoraveiculos-mysql-inserts.sql'
+
+- Listar todos os clientes em ordem alfabética. A listagem deve incluir o nome e a data de nascimento.
+
+- Listar apenas os clientes do gênero masculino. A listagem deve estar em ordem alfabética e deve 
+  incluir o nome e a data de nascimento.
+
+- Listar a quantidade de clientes por gênero.
+
+- Listar a marca, modelo e valor diária de todos os veiculos da marca 'Fiat' e que tenham 4 portas
+
+- Criar uma listagem contendo o número de portas, a marca e o modelo dos veículos. Os veículos devem
+  estar ordenados pelo número de portas e marca.
+
+- Listar a quantidade de veiculos por marca. A listagem deve ter a marca e a quantidade de veículos
+
+- Listar a marca, o modelo e o valor diária dos veículos que estejam na faixa dos 80,00 a 120,00 
+  reais para locação.
+
+- Listar as locações realizadas no mês de janeiro de 2021
+
+- Listar a marca e o modelo dos veículos mais locados
+
+- Listar o nome do cliente e os carros locados por cada um
+
+
+====================================================================================================
+RESPOSTAS EXERCÍCIOS
+====================================================================================================
+
+Exercício 01 - Locadora Veiculos
+----------------------------------------------------------------------------------------------------
+
+- Listar todos os clientes em ordem alfabética. A listagem deve incluir o nome e a data de nascimento.
+
+  SELECT nome, data_nascimento 
+  FROM clientes 
+  ORDER BY nome;
+
+
+- Listar apenas os clientes do gênero masculino. A listagem deve estar em ordem alfabética e deve 
+  incluir o nome e a data de nascimento.
+
+  SELECT nome, data_nascimento 
+  FROM clientes 
+  WHERE genero = 'M' 
+  ORDER BY nome;
+
+
+- Listar a quantidade de clientes por gênero.
+
+  SELECT genero AS 'Gênero', COUNT(codigo) AS 'Quantidade Clientes'
+  FROM clientes 
+  GROUP BY genero;
+
+
+- Listar a marca, modelo e valor diária de todos os veiculos da marca 'Fiat' e que tenham 4 portas
+
+  SELECT marca, modelo, valor_diaria
+  FROM veiculos
+  WHERE marca = 'Fiat' AND portas = 4;
+
+
+- Criar uma listagem contendo o número de portas, a marca e o modelo dos veículos. Os veículos devem
+  estar ordenados pelo número de portas e marca.
+
+  SELECT portas, marca, modelo
+  FROM veiculos
+  ORDER BY portas, marca;
+
+
+- Listar a quantidade de veiculos por marca. A listagem deve ter a marca e a quantidade de veículos
+
+  SELECT marca AS 'Marca', COUNT(codigo) AS 'Quantidade Veículos'
+  FROM veiculos
+  GROUP BY marca;
+
+
+- Listar a marca, o modelo e o valor diária dos veículos que estejam na faixa dos 80,00 a 120,00 
+  reais para locação.
+
+  SELECT marca, modelo, valor_diaria
+  FROM veiculos 
+  WHERE valor_diaria >= 80.00 AND valor_diaria <= 120.00;
+
+
+- Listar as locações realizadas no mês de janeiro de 2021
+
+  SELECT * FROM locacoes WHERE datahora_retirada BETWEEN '2021/01/01' and '2021/01/31';
+
+
+- Listar a marca e o modelo dos veículos mais locados
+
+  -- VERSÃO 1
+  SELECT
+    v.marca, v.modelo, COUNT(li.codigo_veiculo) AS 'total locações'
+  FROM
+    veiculos v
+  INNER JOIN
+    locacoes_veiculos li ON (li.codigo_veiculo = v.codigo)
+  GROUP BY
+    v.marca, v.modelo
+  HAVING
+    COUNT(li.codigo_veiculo) >=
+                 (SELECT
+                    MAX(teste.qtde)
+                  FROM
+                    (SELECT
+                       COUNT(li.codigo_veiculo) AS qtde
+                     FROM
+                       veiculos v
+                     INNER JOIN
+                       locacoes_veiculos li ON (li.codigo_veiculo = v.codigo)
+                     GROUP BY
+                       v.codigo) AS teste);
+
+
+- Listar o nome do cliente e os carros locados por cada um
+
+  -- versão 01
+  SELECT
+    c.nome, v.marca, v.modelo
+  FROM
+    clientes c
+  INNER JOIN
+    locacoes l ON (l.codigo_cliente = c.codigo)
+  INNER JOIN
+    locacoes_veiculos li ON (li.codigo_locacao = l.codigo)
+  INNER JOIN
+    veiculos v ON (v.codigo = li.codigo_veiculo);
+
+
+  -- versão 02
+  SELECT
+    c.nome, CONCAT(v.marca, ' - ', v.modelo)
+  FROM
+    clientes c
+  INNER JOIN
+    locacoes l ON (l.codigo_cliente = c.codigo)
+  INNER JOIN
+    locacoes_veiculos li ON (li.codigo_locacao = l.codigo)
+  INNER JOIN
+    veiculos v ON (v.codigo = li.codigo_veiculo);
+
+
+  -- versão 03
+  SELECT
+    c.nome, GROUP_CONCAT(CONCAT(v.marca, ' - ', v.modelo))
+  FROM
+    clientes c
+  INNER JOIN
+    locacoes l ON (l.codigo_cliente = c.codigo)
+  INNER JOIN
+    locacoes_veiculos li ON (li.codigo_locacao = l.codigo)
+  INNER JOIN
+    veiculos v ON (v.codigo = li.codigo_veiculo)
+  GROUP BY
+    c.codigo;
+
+
+  -- versão 04
+  SELECT
+    c.nome AS 'Cliente', GROUP_CONCAT(CONCAT(v.marca, ' - ', v.modelo)) AS 'Veículos locados'
+  FROM
+    clientes c
+  INNER JOIN
+    locacoes l ON (l.codigo_cliente = c.codigo)
+  INNER JOIN
+    locacoes_veiculos li ON (li.codigo_locacao = l.codigo)
+  INNER JOIN
+    veiculos v ON (v.codigo = li.codigo_veiculo)
+  GROUP BY
+    c.codigo;
+
+
+  -- versão 05
+  SELECT
+    c.nome AS 'Cliente', GROUP_CONCAT(CONCAT(v.marca, ' - ', v.modelo)) AS 'Veículos locados'
+  FROM
+    clientes c
+  INNER JOIN
+    locacoes l ON (l.codigo_cliente = c.codigo)
+  INNER JOIN
+    locacoes_veiculos li ON (li.codigo_locacao = l.codigo)
+  INNER JOIN
+    veiculos v ON (v.codigo = li.codigo_veiculo)
+  GROUP BY
+    c.codigo
+  ORDER BY
+    c.nome;
+ 
+
+-- Listar o nome do cliente e o tanto de gastou com locação de veículos.
+
+  SELECT
+    c.nome, SUM(l.valor_locacao)
+  FROM
+    clientes c
+  INNER JOIN
+    locacoes l ON (l.codigo_cliente = c.codigo)
+  GROUP BY
+    c.nome
+  ORDER BY
+    2 DESC;
+

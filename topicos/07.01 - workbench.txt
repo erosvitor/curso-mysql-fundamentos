@@ -1,0 +1,130 @@
+====================================================================================================
+CURSO MYSQL FUNDAMENTOS - WORKBENCH
+====================================================================================================
+
+
+Definição
+----------------------------------------------------------------------------------------------------
+O Workbench é um software desenvolvido pela Oracle e é utilizado para facilitar a manutenção de 
+bancos de dados MySQL.
+
+
+Acessando um servidor MySQL
+----------------------------------------------------------------------------------------------------
+- Local
+- Remoto
+
+
+Inspecionando um banco de dados
+----------------------------------------------------------------------------------------------------
+- Selecionar um banco de dados
+- Clicar com botão direito e selecionar a opção 'Schema Inspector'
+
+
+Alterando uma tabela
+----------------------------------------------------------------------------------------------------
+- Selecionar uma tabela na aba 'Tables'
+- Clicar com botão direito e selecionar a opção 'Alter Table...'
+
+
+Criando uma tabela
+----------------------------------------------------------------------------------------------------
+- Clicar com botão direito sobreq qualquer área da aba 'Table' e selecionar a opção 'Create Table'
+
+
+Executando instruções SQL
+----------------------------------------------------------------------------------------------------
+- Clicar no ícone 'Create a new SQL tab for executing queries'
+
+
+Abrindo um arquivo de script SQL
+----------------------------------------------------------------------------------------------------
+- Clicar no ícone 'Open a SQL script file in a new query tab
+
+
+Criando um modelo
+----------------------------------------------------------------------------------------------------
+- Clicar no ícone com sinal de + ao lado da palavra Models na tela inicial do Workbench
+
+
+Aplicando o modelo
+----------------------------------------------------------------------------------------------------
+- Abrir o modelo, selecionar o menu 'Database' e clicar na opção 'Forward Engineer'
+
+
+Sincronizando o modelo
+----------------------------------------------------------------------------------------------------
+- Fazer alguma modificação no modelo, selecionar o menu 'Database' e clicar na opção 'Synchronize 
+  Model'
+
+
+====================================================================================================
+EXERCÍCIOS
+====================================================================================================
+
+Exercício 01 - Atlas Geográfico
+----------------------------------------------------------------------------------------------------
+1) Executar o script 'atlas-mysql-create.sql' para que o banco de dados 'atlas' seja criado.
+
+2) Executar o script 'atlas-mysql-inserts.sql' para popular o banco de dados 'atlas'.
+
+3) Criar um relatório contendo o nome dos continentes ordenados por ordem alfabética
+  
+4) Criar um relatório contendo os paises da América do Sul
+
+5) Criar um relatório contendo o nome e a capital dos paises que pertencem ao contimente europeu
+
+6) Criar um relatório contendo o nome, a capital e o nome do continente ao qual os paises pertencem
+
+7) Criar um relatório contendo o nome do continente e o total de paises contido em cada continente
+
+8) Criar um relatório contendo os estados brasileiros agrupados pelas regiões brasileiras
+
+
+====================================================================================================
+RESPOSTAS EXERCÍCIOS
+====================================================================================================
+
+Exercício 01 - Atlas Geográfico
+----------------------------------------------------------------------------------------------------
+1) Executar o script 'atlas.sql' para que o banco de dados 'atlas' seja criado.
+
+
+2) Executar o script 'atlas-mysql-inserts.sql' para popular o banco de dados 'atlas'.
+
+
+3) Criar um relatório contendo o nome dos continentes ordenados por ordem alfabética
+
+   SELECT nome FROM continentes ORDER BY nome;
+
+  
+4) Criar um relatório contendo os paises da América do Sul
+
+   SELECT nome FROM paises WHERE codigo_continente = 1;
+
+
+5) Criar um relatório contendo o nome e a capital dos paises que pertencem ao contimente europeu
+
+   SELECT nome, capital FROM paises WHERE codigo_continente = 3;
+
+
+6) Criar um relatório contendo o nome, a capital e o nome do continente ao qual os paises pertencem
+
+    SELECT p.nome, p.capital, c.nome 
+    FROM paises p
+    INNER JOIN continentes c ON (c.codigo = p.codigo_continente);
+
+
+7) Criar um relatório contendo o nome do continente e o total de paises contido em cada continente
+
+    SELECT c.nome, COUNT(p.codigo)
+    FROM continentes c
+    INNER JOIN paises p ON (p.codigo_continente = c.codigo)
+    GROUP BY c.nome;
+
+8) Criar um relatório contendo os estados brasileiros agrupados pelas regiões brasileiras
+
+    SELECT r.nome, e.nome
+    FROM regioes r
+    INNER JOIN estados e ON (e.codigo_regiao = r.codigo);
+

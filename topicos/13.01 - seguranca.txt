@@ -1,0 +1,84 @@
+====================================================================================================
+CURSO MYSQL FUNDAMENTOS - SEGURANÇA
+====================================================================================================
+
+
+Listando todos os usuários
+----------------------------------------------------------------------------------------------------
+mysql> select user, host, account_locked from mysql.user;
+
+
+Criando um usuário
+----------------------------------------------------------------------------------------------------
+mysql> create user '<nome-usuario>'@'localhost' identified by '<senha-usuario>';
+mysql> create user '<nome-usuario>'@'%' identified by '<senha-usuario>';
+
+exemplo:
+
+  mysql> create user 'superuser'@'localhost' identified by 'superuser';
+  mysql> create user 'superuser'@'%' identified by 'superuser';
+
+
+Obtendo permissões do usuários
+----------------------------------------------------------------------------------------------------
+mysql> show grants for <nome-usuario>;
+  
+or
+
+mysql> select grantee, privilege_type from information_schema.user_privileges where grantee like '%<nome-usuario>%';
+
+
+Concedendo permissões
+----------------------------------------------------------------------------------------------------
+mysql> grant all privileges on <nome-banco-de-dados>.* TO '<nome-usuario>'@'localhost';
+mysql> grant all privileges on <nome-banco-de-dados>.* TO '<nome-usuario>'@'%';
+
+exemplo:
+
+  mysql> grant all privileges on agenda.* TO 'superuser'@'localhost';
+  mysql> grant all privileges on agenda.* TO 'superuser'@'%';
+
+Permissões possíveis:
+- ALL: todos os privilégios
+- ALTER: permissão para alteração de tabelas
+- ALTER ROUTINE: permissão para alteração e exclusão de SPs e triggers
+- CREATE USER: permissão para criação, renomeação e exclusão de usuários
+- DELETE: permissão para deleção de registros
+- DROP: permissão para apagar bases de dados, tabelas e views
+- INSERT: permissão para inserção de registros
+- GRANT OPTION: permissão de conceder permissões para usuários.
+- SELECT: permissão para realizar comandos de busca de registros
+- UPDATE: permissão para alterar registros
+
+
+Concedendo permissão apenas leitura
+----------------------------------------------------------------------------------------------------
+mysql> grant select, show view on <nome-banco-de-dados>.* TO '<nome-usuario>'@'localhost';
+mysql> grant select, show view on <nome-banco-de-dados>.* TO '<nome-usuario>'@'%';
+
+exemplo:
+  
+  mysql> create user 'user01'@'localhost' identified by 'user01';
+  mysql> grant select, show view on agenda.* to 'user01'@'localhost';
+
+
+Removendo permissões
+----------------------------------------------------------------------------------------------------
+mysql> revoke <permission> on *.* from '<nome-usuario>'@'localhost';
+mysql> revoke <permission> on *.* from '<nome-usuario>'@'%';
+
+exemplo:
+
+  mysql> revoke select, show view on agenda.* from 'user01'@'localhost';
+
+
+Excluindo usuário
+----------------------------------------------------------------------------------------------------
+mysql> drop user '<nome-usuario>'@'localhost';
+mysql> drop user '<nome-usuario>'@'%';
+
+exemplo:
+
+  mysql> drop user 'user01'@'localhost';
+
+

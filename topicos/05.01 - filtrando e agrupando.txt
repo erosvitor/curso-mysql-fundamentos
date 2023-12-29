@@ -1,0 +1,268 @@
+====================================================================================================
+CURSO MYSQL FUNDAMENTOS - FILTRANDO E AGRUPANDO DADOS
+====================================================================================================
+
+
+Banco de dados exemplo
+----------------------------------------------------------------------------------------------------
+Para este tópico será utilizado um novo banco de dados chamado 'produtos' que será criado com o 
+script abaixo.
+
+
+CREATE DATABASE produtos;
+
+USE produtos;
+
+CREATE TABLE produtos
+(
+  codigo INT NOT NULL AUTO_INCREMENT,
+  categoria VARCHAR(30) NOT NULL,
+  descricao VARCHAR(60) NOT NULL,
+  preco DECIMAL(8,2) NOT NULL,
+  PRIMARY KEY (codigo)
+);
+
+INSERT INTO produtos VALUES (1, 'Projetor', 'Epson Powerlite S12+', 1598.00);
+INSERT INTO produtos VALUES (2, 'Projetor', 'BenQ MX662', 2799.00);
+INSERT INTO produtos VALUES (3, 'Projetor', 'Optoma HD TX7156', 3699.00);
+INSERT INTO produtos VALUES (4, 'Projetor', 'Acer – C120', 1038.00);
+INSERT INTO produtos VALUES (5, 'Projetor', 'Multilaser Mini', 617.00);
+INSERT INTO produtos VALUES (6, 'Notebook', 'Samsung Ativ Book 2', 1800.00);
+INSERT INTO produtos VALUES (7, 'Notebook', 'Dell Inspiron 14 Série 5000', 1890.00);
+INSERT INTO produtos VALUES (8, 'Notebook', 'Asus X450LA', 1900.00);
+INSERT INTO produtos VALUES (9, 'Notebook', 'Lenovo G40', 1900.00);
+INSERT INTO produtos VALUES (10, 'Notebook', 'HP Pavilion', 1990.00);
+INSERT INTO produtos VALUES (11, 'Roteador', 'D-Link TR400', 230.30);
+INSERT INTO produtos VALUES (12, 'Roteador', 'D-Link MN-01', 189.90);
+
+
+Recuperando dados de um determinado registro
+----------------------------------------------------------------------------------------------------
+SELECT <campos> FROM <nome-tabela> WHERE <campo-chave> = <valor>;
+
+Exemplo
+
+  SELECT descricao, preco FROM produtos WHERE categoria = 'Projetor';
+  SELECT descricao, preco FROM produtos WHERE preco >= 2000.00;
+
+
+Cláusula LIKE
+----------------------------------------------------------------------------------------------------
+A cláusula LIKE é utilizada para filtrar registros baseados em trechos do conteúdo dos campos do 
+tipo TEXTO. As possibilidades de filtro com o LIKE são:
+
+  - Selecionar produtos que começam por uma determinada letra ou palavra
+  - Selecionar produtos que contenham uma determinada palavra no meio do nome
+  - Selecionar produtos que terminam por uma determinada letra ou palavra
+  - Selecionar produtos que não tenham um determinado campo preenchido
+
+  Exemplo
+
+    SELECT descricao, preco FROM produtos WHERE descricao LIKE 'A%';
+    SELECT descricao, preco FROM produtos WHERE descricao LIKE '%H%';
+    SELECT descricao, preco FROM produtos WHERE descricao LIKE '%Mini';
+
+
+Cláusulas IS NULL e IS NOT NULL
+----------------------------------------------------------------------------------------------------
+As cláusulas IS NULL e IS NOT NULL são utilizadas para filtrar registros que contenham determinados
+campos com o valor NULL e campos que não contenham o valor NULL.
+
+Exemplo
+
+  SELECT descricao, preco FROM produtos WHERE descricao IS NULL;
+
+  ou
+
+  SELECT descricao, preco FROM produtos WHERE descricao IS NOT NULL;
+
+
+Cláusula IN
+----------------------------------------------------------------------------------------------------
+A cláusula IN é utilizada para especificar um conjunto de valores que serão aplicados na filtragem
+dos registros.
+
+Exemplo
+
+  SELECT descricao, preco FROM produtos WHERE codigo IN (1, 5, 10);
+
+
+Limitando a quantidade de registros
+----------------------------------------------------------------------------------------------------
+SELECT <campos> FROM <nome-tabela> LIMIT <total-registros>;
+
+Exemplo
+
+  SELECT descricao, preco FROM produtos LIMIT 5;
+
+
+====================================================================================================
+Agrupando dados
+====================================================================================================
+
+Funções de agrupamento
+----------------------------------------------------------------------------------------------------
+As funções de agrupamento de dados são utilizadas para a realização de operações de contagem ou 
+verificação sobre um grupo de registros.
+
+As operações suportadas pelas funções de agrupamento são:
+- Contar quantos registros uma determinada tabela possui
+- Calcular a soma de um determinado campo
+- Calcular a média aritmética de um determinado campo
+- Selecionar o maio valor armazenado num determinado campo
+- Selecionar o menor valor armazenado num determinado campo
+
+As operações acima citadas são executada pelas seguintes funções SQL:
+- COUNT = retorna a quantidade de registros
+- SUM = retorna a soma
+- AVG = retorna a média aritmética
+- MIN = retorna o menor valor
+- MAX = retorna o maior valor
+
+Exemplos
+
+  SELECT COUNT(codigo) FROM produtos;
+  SELECT SUM(preco) FROM produtos;
+  SELECT AVG(preco) FROM produtos;
+  SELECT MIN(preco) FROM produtos;
+  SELECT MAX(preco) FROM produtos;
+
+
+Nomeando as colunas retornadas pelo SELECT
+----------------------------------------------------------------------------------------------------
+Para alterar o nome atribuido automaticamente pelo comando SELECT a uma determinada coluna, deve-se 
+utilizar o comando 'AS' seguido do novo nome logo após o nome do campo no SELECT.
+
+Exemplo
+
+  SELECT COUNT(codigo) AS 'Quantidade' FROM produtos;
+  SELECT SUM(preco) AS 'Total' FROM produtos;
+  SELECT AVG(preco) AS 'Média Aritmética' FROM produtos;
+  SELECT MIN(preco) AS 'Menor Preço' FROM produtos;
+  SELECT MAX(preco) AS 'Maior Preço' FROM produtos;
+
+
+Agrupando dados
+----------------------------------------------------------------------------------------------------
+SELECT <campos>, <função-agregação> FROM <nome-tabela> GROUP BY <campo>;
+
+Exemplo
+
+  SELECT categoria, COUNT(codigo) As 'Quantidade' FROM produtos GROUP BY categoria;
+
+
+====================================================================================================
+EXERCÍCIOS
+====================================================================================================
+
+Exercício 01 - Livraria
+----------------------------------------------------------------------------------------------------
+Extrair dados de um banco de dados que armazena dados sobre livros.
+
+Intruções
+
+- Executar o script abaixo para criar o banco de dados 'livraria'
+
+  CREATE DATABASE livraria;
+
+  USE livraria;
+
+  CREATE TABLE livros
+  (
+    codigo INT NOT NULL AUTO_INCREMENT,
+    titulo VARCHAR(100) NOT NULL,
+    autores VARCHAR(200) NOT NULL,
+    preco DECIMAL(8,2) NOT NULL,
+    PRIMARY KEY (codigo)
+  );
+
+- Executar os comandos abaixo para popular a tabela 'livros'
+
+  INSERT INTO livros VALUES (1, 'C Completo e Total', 'Herbert Schildt', 297.90);
+  INSERT INTO livros VALUES (2, 'C++ Guia para iniciantes', 'Herbert Schildt', 112.00);
+  INSERT INTO livros VALUES (3, 'Java para iniciantes', 'Herbert Schildt', 105.99);
+  INSERT INTO livros VALUES (4, 'UML Guia do usuário', 'Grady Booch, James Rumbaugh, Ivar Jacobson', 170.30);
+  INSERT INTO livros VALUES (5, 'Padrões de Projeto - Soluções reutilizáveis', 'Erich Gamma', 118.00);
+  INSERT INTO livros VALUES (6, 'Código Limpo - Habilidades práticas do agile software', 'Robert C. Martin', 87.70);
+  INSERT INTO livros VALUES (7, 'Análise de Pontos de Função', 'Carlos Eduardo Vazquez', 21.00);
+  INSERT INTO livros VALUES (8, 'O futuro da memória - Total Recall', 'Gordon Bell', 13.50);
+  INSERT INTO livros VALUES (9, '17 Equações que mudaram o mundo', 'Ian Stewart', 42.79);
+  INSERT INTO livros VALUES (10, 'O instinto matemático', 'Keith Devlin', 33.75);
+  INSERT INTO livros VALUES (11, 'Almanaque das curiosidades matemáticas', 'Ian Stewart', 40.00);
+  INSERT INTO livros VALUES (12, 'A arte da guerra', 'Sun Tzu', 27.90);
+
+- Gerar uma listagem contendo o nome e o preço de todos os livros
+
+- Mostrar o livro mais caro
+
+- Mostrar o preço médio dos livros
+
+- Gerar uma listagem contendo o código e nome dos livros que custam mais do que 110,00 reais 
+
+- Listar todos os livros que começam pela letra 'C'. A listagem deve conter todos os campos.
+
+- Listar os livros do autor Herbert Schildt
+
+- Gerar uma listagem de livros contendo o nome do autor e o nome do livro
+
+- Gerar um relatório contendo os seguintes dados estatísticos:
+
+  - Quantidade de livros cadastrados 
+  - Soma total dos preços dos livros
+  - Média aritmética dos preços dos livros
+  - O menor preço
+  - O maior preço
+
+
+====================================================================================================
+RESPOSTAS EXERCÍCIOS
+====================================================================================================
+
+Exercício 01 - Livraria
+----------------------------------------------------------------------------------------------------
+
+- Gerar uma listagem contendo o nome e o preço de todos os livros
+
+  SELECT titulo, preco FROM livros;
+
+
+- Mostrar o livro mais caro
+
+  SELECT titulo, MAX(ṕreco) FROM produtos ORDER BY titulo;
+
+
+- Mostrar o preço médio dos livros
+
+  SELECT AVG(ṕreco) FROM produtos;
+
+
+- Gerar uma listagem contendo o código e nome dos livros que custam mais do que 110,00 reais 
+
+  SELECT codigo, titulo FROM livros WHERE preco > 110.00;
+
+
+- Listar todos os livros que começam pela letra 'A'. A listagem deve conter todos os campos.
+
+  SELECT * FROM livros WHERE titulo LIKE 'C%';
+
+
+- Listar os livros do autor Eduardo Ferraz
+
+  SELECT * FROM livros WHERE autores = 'Herbert Schildt';
+
+
+- Gerar uma listagem de livros contendo o nome do autor e o nome do livro
+
+  SELECT titulo, autores FROM livros;
+
+
+- Gerar um relatório contendo os seguintes dados estatísticos:
+
+  - Quantidade de livros cadastrados 
+  - Soma total dos preços dos livros
+  - Média aritmética dos preços dos livros
+  - O menor preço
+  - O maior preço
+
+  SELECT COUNT(codigo), SUM(preco), AVG(preco), MIN(preco), MAX(preco) FROM livros;
+

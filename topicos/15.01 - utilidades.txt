@@ -1,0 +1,94 @@
+====================================================================================================
+CURSO MYSQL FUNDAMENTOS - UTILIDADES
+====================================================================================================
+
+
+Permitindo acesso remoto
+----------------------------------------------------------------------------------------------------
+- Liberar acesso remoto ao servidor MySQL
+
+  - Editar o arquivo /etc/mysql/mysql.conf.d/mysqld.cnf
+ 
+  - Substituir a linha
+
+      bind-address 127.0.0.1
+
+    por
+
+      bind-address 0.0.0.0
+
+- Parar o servidor MySQL
+
+  $ sudo service mysql stop
+
+- Iniciar o servidor MySQL
+
+  $ sudo service mysql start
+
+- Obter o status do servidor MySQL
+
+  $ sudo service mysql status
+
+
+Listar nome das tabelas do banco de dados
+----------------------------------------------------------------------------------------------------
+SELECT
+  table_name
+FROM
+  information_schema.tables;
+
+
+Retornar o tamanho das tabelas em um determinado banco de dados
+----------------------------------------------------------------------------------------------------
+SELECT
+  table_name AS tabela,
+  round(((data_length + index_length) / 1024 / 1024), 2) AS 'Tamanho (MB)'
+FROM
+  information_schema.TABLES
+WHERE
+  table_schema = 'sigaemdb'
+ORDER BY
+  (data_length + index_length) DESC;
+
+
+Retornar o tamanho de um determinado banco de dados
+----------------------------------------------------------------------------------------------------
+SELECT
+  SUM(data_length + index_length) / 1024 / 1024 / 1024 AS "Tamanho (GB)"
+FROM
+  information_schema.TABLES
+WHERE
+  table_schema = 'sigaemdb'
+GROUP BY
+  table_schema
+  
+
+Exportar tabela para arquivo SQL INSERT
+----------------------------------------------------------------------------------------------------
+mysqldump -u root -proot --no-create-info --skip-triggers <database-name> <table-name> > <file-name>.sql
+mysqldump -u root -proot --no-create-info --skip-triggers --compact <database-name> <table-name> > <file-name>.sql
+mysqldump -u root -proot --no-create-info --skip-triggers --compact --compatible=oracle <database-name> <table-name> > <file-name>.sql
+mysqldump -u root -proot --no-create-info --skip-triggers --compact --compatible=oracle --extended-insert=FALSE <database-name> <table-name> > <file-name>.sql
+
+
+Script para exportar tabelas para arquivos SQL INSERT
+----------------------------------------------------------------------------------------------------
+echo "Exportando tabelas para arquivos de scripts..."
+export SET dbname='<database-name>';
+echo "show tables;" | mysql -u root -proot $dbname | grep -v '^Tables_in_' > tablenames.txt
+for t in `cat tablenames.txt`;
+do
+echo "Exportando tabela $t"
+mysqldump -u root -proot --no-create-info --skip-triggers --compact --compatible=oracle --skip-quote-names --extended-insert=FALSE --default-character-set=utf8 <database-name> $t > "$t.sql"
+done
+echo ""
+
+
+Ativando acesso localhost para usuário 'root' no MySQL 5.7 e Ubuntu 18.04 
+----------------------------------------------------------------------------------------------------
+$ sudo mysql -u root
+
+  mysql> ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'root';
+
+$ sudo service mysql restart
+

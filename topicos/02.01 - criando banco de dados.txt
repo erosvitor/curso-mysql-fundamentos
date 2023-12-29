@@ -1,0 +1,189 @@
+====================================================================================================
+CURSO MYSQL FUNDAMENTOS - CRIANDO BANCO DE DADOS
+====================================================================================================
+
+
+Banco de dados
+----------------------------------------------------------------------------------------------------
+- Acessar o console do MySQL
+
+  $ mysql -u root -proot
+
+
+- Listar os bancos de dados existentes
+  
+  mysql> show databases;
+
+
+- Criar o banco de dados
+
+  mysql> create database <nome-banco-de-dados>;
+
+  Exemplo:
+
+    mysql> create database teste;
+
+
+- Acessar o banco de dados recém criado
+
+  mysql> use <nome-do-banco-de-dados>;
+  
+  Exemplo
+  
+    mysql> use teste;
+
+
+- Listar as tabelas do banco de dados
+
+  mysql> show tables;
+
+
+- Excluir um banco de dados
+
+  mysql> drop database <nome-do-banco-de-dados>;
+  
+  Exemplo
+  
+    mysql> drop database teste;
+
+  
+- Criar um banco de dados com conjunto de caracteres
+
+  mysql> CREATE DATABASE <nome-do-banco-de-dados> CHARACTER SET <character-set> COLLATE <collate>;
+
+  Exemplo
+  
+    mysql> CREATE DATABASE agenda CHARACTER SET utf8 COLLATE utf8_general_ci;
+
+  Character Set vs COLLATE
+    - Um 'character set' é uma seleção de símbolos e codificação.
+    - Uma 'collation' é uma seleção de regras para comparação de caracteres na 
+      seleção de símbolos (character set)
+
+
+Tabelas
+----------------------------------------------------------------------------------------------------
+- Criando uma tabela
+
+  mysql> CREATE TABLE <nome-tabela> ( <lista-campos> );
+
+  Exemplo
+
+    CREATE TABLE contatos
+    (
+      codigo INT,
+      nome VARCHAR(60),
+      data_nascimento DATE,
+      telefone VARCHAR(15)
+    );
+
+
+- Adicionar chave primária
+
+  mysql> ALTER TABLE <nome-tabela> ADD PRIMARY KEY (<nome-campo>);
+
+  Exemplo
+
+    mysql> ALTER TABLE contatos ADD PRIMARY KEY (codigo); 
+
+
+- Remover chave primária
+
+  mysql> ALTER TABLE <nome-tabela> DROP PRIMARY KEY;
+
+  Exemplo
+
+    mysql> ALTER TABLE contatos DROP PRIMARY KEY;
+
+
+- Nomear chave primária
+
+  mysql> ALTER TABLE <nome-tabela> ADD CONSTRAINT <nome-chave-primaria> PRIMARY KEY (<nome-campo>);
+
+  Exemplo
+
+    mysql> ALTER TABLE contatos ADD CONSTRAINT pk_codigo PRIMARY KEY (codigo);
+
+
+- Excluir um tabela
+
+  mysql> DROP TABLE <nome-tabela>;
+
+  Exemplo
+
+    mysql> DROP TABLE contatos;
+
+
+- Adicionar restrições
+
+  Tipos de restrições:
+    - Não nulos
+    - Valores limitados
+
+  CREATE TABLE contatos (
+    codigo INT NOT NULL,
+    nome VARCHAR(60) NOT NULL,
+    data_nascimento DATE NOT NULL,
+    telefone VARCHAR(15) NOT NULL,
+    PRIMARY KEY (codigo)
+  );
+
+
+- Criando banco de dados através de script SQL
+
+  mysql> source <caminho-do-arquivo>/<nome-do-arquivo.sql>;
+
+  Exemplo:
+
+    mysql> source /path/controleacesso-mysql-create.sql;
+
+
+====================================================================================================
+EXERCÍCIOS
+====================================================================================================
+
+Exercício 01 – Banco de dados Alunos
+----------------------------------------------------------------------------------------------------
+Criar um banco de dados para armazenar dados de alunos.
+
+Instruções:
+
+- Criar um banco de dados chamado 'alunos'
+- Criar uma tabela chamada 'alunos' contendo os seguintes campos:
+  codigo, nome, cpf e genero
+- O campo 'codigo' deve ser numérico, sequencial e automático
+- A chave primária da tabela deve ser o campo 'codigo'
+- O campo 'nome' deve armazenar até 80 caracteres
+- O tamanho do campo 'cpf' deve ser 11
+- No campo 'sexo' será armazenado as letras 'F' ou 'M'
+- Todos os campos devem ser obrigatórios
+
+
+Exercício 02 – CHAR e VARCHAR
+----------------------------------------------------------------------------------------------------
+Qual a diferença entre os tipos CHAR e VARCHAR?
+
+
+====================================================================================================
+RESPOSTAS EXERCÍCIOS
+====================================================================================================
+
+Exercício 01 – Banco de dados Vendas
+----------------------------------------------------------------------------------------------------
+CREATE DATABASE alunos;
+USE alunos;
+CREATE TABLE alunos
+(
+  codigo INT NOT NULL AUTO_INCREMENT,
+  nome VARCHAR(80) NOT NULL,
+  cpf CHAR(11) NOT NULL,
+  sexo CHAR(1) NOT NULL,
+  PRIMARY KEY (codigo)
+);
+
+
+Exercício 02 – CHAR e VARCHAR
+----------------------------------------------------------------------------------------------------
+O CHAR sempre ocupará a quantidade de caracteres definida e o VARCHAR ocupará a quantidade conforme
+a conteúdo armazenado.
+

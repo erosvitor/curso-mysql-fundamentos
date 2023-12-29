@@ -1,0 +1,372 @@
+====================================================================================================
+CURSO MYSQL FUNDAMENTOS - RELACIONAMENTO N para N
+====================================================================================================
+
+
+Banco de dados exemplo
+----------------------------------------------------------------------------------------------------
+Para este tópico será utilizado um novo banco de dados chamado 'faculdade' que sera criado logo 
+abaixo.
+
+
+Definição
+----------------------------------------------------------------------------------------------------
+O relacionamento N para N ocorre quando vários registros de uma tabela se relacionam com vários 
+registros de uma outra tabela. Neste tipo de relacionamento é criado uma terceira tabela para 
+armazenar o relacionamento entre as tabelas.
+
+Exemplo
+
+  Professor e Cursos
+
+    Professor           Curso         
+    Fulano da Silva     MySQL           
+    Fulano da Silva     Linguagem C
+    Fulano da Silva     Java
+    Beltrano Gomes      MySQL
+    Beltrano Gomes      Web standards
+    Siclano Pereira     Java
+    
+
+  Aplicando o relacionamento N para N
+
+    Professor
+      Codigo  Nome
+      1       Fulano da Silva
+      2       Beltrano Gomes
+      3       Siclano Pereira
+
+    Curso
+      Codigo  Nome
+      1       MySQL
+      2       Linguagem C
+      3       Java
+      4       Web standards
+
+    Professor e Curso
+      Codigo Professor    Codigo Curso
+      1                   1
+      1                   2
+      1                   3
+      2                   1
+      2                   4
+      3                   3
+
+
+Chave estrangeira
+----------------------------------------------------------------------------------------------------
+O relacionamento N para N entre duas tabelas é estabelecido da seguinte maneira:
+- Na tabela 1 define-se um campo como chave primária
+- Na tabela 2 define-se um campo como chave primária. Caso não exista um candidato, adicionar um 
+  campo extra do tipo numérico inteiro, auto-incrementável
+- Na tabela 3 define-se os dois campos como sendo chave primária.
+- Na tabela 3 um dos campos será chave estrangeira para a tabela 1 e o outro campo
+  será chave estrangeira para a tabela 2.
+
+
+Definindo o código SQL
+----------------------------------------------------------------------------------------------------
+CREATE DATABASE faculdade;
+
+USE faculdade;
+
+CREATE TABLE professores
+(
+  codigo INT NOT NULL AUTO_INCREMENT,
+  nome VARCHAR(80) NOT NULL,
+  CONSTRAINT pk_professores PRIMARY KEY (codigo)
+);
+
+CREATE TABLE cursos
+(
+  codigo INT NOT NULL AUTO_INCREMENT,
+  nome VARCHAR(40) NOT NULL,
+  CONSTRAINT pk_cursos PRIMARY KEY (codigo)
+);
+
+CREATE TABLE professores_cursos
+(
+  codigo_professor INT NOT NULL,
+  codigo_curso INT NOT NULL,
+  CONSTRAINT pk_professores_cursos PRIMARY KEY (codigo_professor, codigo_curso),
+  CONSTRAINT fk_professores_cursos_professores FOREIGN KEY (codigo_professor) REFERENCES professores (codigo),
+  CONSTRAINT fk_professores_cursos_cursos FOREIGN KEY (codigo_curso) REFERENCES cursos (codigo)
+);
+
+
+Inserindo dados
+----------------------------------------------------------------------------------------------------
+Inserir primeiramente na tabela 1
+
+  INSERT INTO professores VALUES (1, 'Fulano da Silva'); 
+  INSERT INTO professores VALUES (2, 'Beltrano Gomes');
+  INSERT INTO professores VALUES (3, 'Siclano Pereira');
+
+
+Inserir primeiramente na tabela 2
+
+  INSERT INTO cursos VALUES (1, 'MySQL'); 
+  INSERT INTO cursos VALUES (2, 'Linguagem C');
+  INSERT INTO cursos VALUES (3, 'Java');
+  INSERT INTO cursos VALUES (4, 'Web standards');
+
+Inserir primeiramente na tabela 3
+
+  INSERT INTO professores_cursos VALUES (1, 1); 
+  INSERT INTO professores_cursos VALUES (1, 2);
+  INSERT INTO professores_cursos VALUES (1, 3);
+  INSERT INTO professores_cursos VALUES (2, 1);
+  INSERT INTO professores_cursos VALUES (2, 4);
+  INSERT INTO professores_cursos VALUES (3, 3);
+
+
+Selecionando dados
+----------------------------------------------------------------------------------------------------
+  SELECT
+    p.nome, c.nome
+  FROM   
+    professores p
+  INNER JOIN
+    professores_cursos pc ON (pc.codigo_professor = p.codigo)
+  INNER JOIN
+    cursos c ON (c.codigo = pc.codigo_curso)
+  ORDER BY
+    p.nome;
+
+
+====================================================================================================
+EXERCÍCIOS
+====================================================================================================
+
+Exercício 01 - Relatórios
+----------------------------------------------------------------------------------------------------
+
+Instruções
+
+- Executar o script abaixo
+
+  CREATE DATABASE erp;
+
+  USE erp;
+
+  CREATE TABLE setores
+  (
+    codigo SMALLINT NOT NULL AUTO_INCREMENT,
+    descricao VARCHAR(40) NOT NULL,
+    PRIMARY KEY (codigo)
+  );
+
+  CREATE TABLE cargos
+  (
+    codigo SMALLINT NOT NULL AUTO_INCREMENT,
+    codigo_setor SMALLINT NOT NULL,
+    descricao VARCHAR(40) NOT NULL,
+    PRIMARY KEY (codigo),
+    FOREIGN KEY (codigo_setor) REFERENCES setores (codigo) ON UPDATE CASCADE ON DELETE RESTRICT
+  );
+
+  CREATE TABLE funcionarios 
+  (
+    codigo INTEGER NOT NULL AUTO_INCREMENT,
+    nome VARCHAR(60) NOT NULL,
+    sexo CHAR NOT NULL,
+    codigo_setor SMALLINT NOT NULL,
+    codigo_cargo SMALLINT NOT NULL,
+    PRIMARY KEY (codigo),
+    FOREIGN KEY (codigo_setor) REFERENCES setores (codigo) ON UPDATE CASCADE ON DELETE RESTRICT,
+    FOREIGN KEY (codigo_cargo) REFERENCES cargos (codigo) ON UPDATE CASCADE ON DELETE RESTRICT
+  );
+
+
+  INSERT INTO setores VALUES (1, 'Financeiro');
+  INSERT INTO setores VALUES (2, 'Informática');
+  INSERT INTO setores VALUES (3, 'Administrativo');
+  INSERT INTO setores VALUES (4, 'Recepção');
+
+
+  INSERT INTO cargos VALUES (1, 1, 'Assistente Financeiro 1');
+  INSERT INTO cargos VALUES (2, 1, 'Assistente Financeiro 2');
+  INSERT INTO cargos VALUES (3, 1, 'Auxiliar Financeiro 1');
+  INSERT INTO cargos VALUES (4, 1, 'Auxiliar Financeiro 2');
+  INSERT INTO cargos VALUES (5, 1, 'Coordenador Financeiro');
+  INSERT INTO cargos VALUES (6, 2, 'Programador Junior');
+  INSERT INTO cargos VALUES (7, 2, 'Programador Pleno');
+  INSERT INTO cargos VALUES (8, 2, 'Programador Senior');
+  INSERT INTO cargos VALUES (9, 3, 'Assistente Administrativo');
+  INSERT INTO cargos VALUES (10, 3, 'Auxiliar Administrativo');
+  INSERT INTO cargos VALUES (11, 3, 'Analista Administrativo');
+  INSERT INTO cargos VALUES (12, 4, 'Recepcionista');
+
+
+  INSERT INTO funcionarios VALUES (1, 'Cintonildo Alves', 'M', 1, 1);
+  INSERT INTO funcionarios VALUES (2, 'Anicarla da Silva', 'F', 1, 2);
+  INSERT INTO funcionarios VALUES (3, 'Petrusco Semsobrenome', 'M', 2, 6);
+  INSERT INTO funcionarios VALUES (4, 'Manutaldo Gonçalves', 'M', 2, 6);
+  INSERT INTO funcionarios VALUES (5, 'Lamitalda Souza', 'F', 2, 7);
+  INSERT INTO funcionarios VALUES (6, 'Lucatrim Pedrosa', 'M', 3, 9);
+  INSERT INTO funcionarios VALUES (7, 'Ontopal Alvarenga', 'M', 4, 12);
+
+
+- Gerar as seguintes listagens
+
+  a) Gerar uma relação contendo setores e cargos
+
+  b) Gerar uma relação contendo cargos e funcionários
+
+  c) Gerar uma relação contendo setores, cargos e funcionários
+
+  d) Gerar uma relação de TODOS os setores, cargos e funcionários
+
+  e) Gerar uma relação contendo a quantidade de cargos por setor
+
+  f) Gerar uma relação contendo a quantidade de funcionários por sexo
+
+
+====================================================================================================
+RESPOSTAS EXERCÍCIOS
+====================================================================================================
+
+Exercício 01 - Relatórios
+----------------------------------------------------------------------------------------------------
+
+Instruções
+
+- Executar o script abaixo
+
+  CREATE DATABASE erp;
+
+  USE erp;
+
+  CREATE TABLE setores
+  (
+    codigo SMALLINT NOT NULL AUTO_INCREMENT,
+    descricao VARCHAR(40) NOT NULL,
+    PRIMARY KEY (codigo)
+  );
+
+  CREATE TABLE cargos
+  (
+    codigo SMALLINT NOT NULL AUTO_INCREMENT,
+    codigo_setor SMALLINT NOT NULL,
+    descricao VARCHAR(40) NOT NULL,
+    PRIMARY KEY (codigo),
+    FOREIGN KEY (codigo_setor) REFERENCES setores (codigo) ON UPDATE CASCADE ON DELETE RESTRICT
+  );
+
+  CREATE TABLE funcionarios 
+  (
+    codigo INTEGER NOT NULL AUTO_INCREMENT,
+    nome VARCHAR(60) NOT NULL,
+    sexo CHAR NOT NULL,
+    codigo_setor SMALLINT NOT NULL,
+    codigo_cargo SMALLINT NOT NULL,
+    PRIMARY KEY (codigo),
+    FOREIGN KEY (codigo_setor) REFERENCES setores (codigo) ON UPDATE CASCADE ON DELETE RESTRICT,
+    FOREIGN KEY (codigo_cargo) REFERENCES cargos (codigo) ON UPDATE CASCADE ON DELETE RESTRICT
+  );
+
+
+  INSERT INTO setores VALUES (1, 'Financeiro');
+  INSERT INTO setores VALUES (2, 'Informática');
+  INSERT INTO setores VALUES (3, 'Administrativo');
+  INSERT INTO setores VALUES (4, 'Recepção');
+
+
+  INSERT INTO cargos VALUES (1, 1, 'Assistente Financeiro 1');
+  INSERT INTO cargos VALUES (2, 1, 'Assistente Financeiro 2');
+  INSERT INTO cargos VALUES (3, 1, 'Auxiliar Financeiro 1');
+  INSERT INTO cargos VALUES (4, 1, 'Auxiliar Financeiro 2');
+  INSERT INTO cargos VALUES (5, 1, 'Coordenador Financeiro');
+  INSERT INTO cargos VALUES (6, 2, 'Programador Junior');
+  INSERT INTO cargos VALUES (7, 2, 'Programador Pleno');
+  INSERT INTO cargos VALUES (8, 2, 'Programador Senior');
+  INSERT INTO cargos VALUES (9, 3, 'Assistente Administrativo');
+  INSERT INTO cargos VALUES (10, 3, 'Auxiliar Administrativo');
+  INSERT INTO cargos VALUES (11, 3, 'Analista Administrativo');
+  INSERT INTO cargos VALUES (12, 4, 'Recepcionista');
+
+
+  INSERT INTO funcionarios VALUES (1, 'Cintonildo Alves', 'M', 1, 1);
+  INSERT INTO funcionarios VALUES (2, 'Anicarla da Silva', 'F', 1, 2);
+  INSERT INTO funcionarios VALUES (3, 'Petrusco Semsobrenome', 'M', 2, 6);
+  INSERT INTO funcionarios VALUES (4, 'Manutaldo Gonçalves', 'M', 2, 6);
+  INSERT INTO funcionarios VALUES (5, 'Lamitalda Souza', 'F', 2, 7);
+  INSERT INTO funcionarios VALUES (6, 'Lucatrim Pedrosa', 'M', 3, 9);
+  INSERT INTO funcionarios VALUES (7, 'Ontopal Alvarenga', 'M', 4, 12);
+
+
+- Gerar as seguintes listagens
+
+  a) Gerar uma relação contendo setores e cargos
+
+     SELECT
+       S.DESCRICAO AS SETOR,
+       C.DESCRICAO AS CARGO
+     FROM
+       SETORES S
+     INNER JOIN
+       CARGOS C ON (C.CODIGO_SETOR = S.CODIGO);
+
+
+  b) Gerar uma relação contendo cargos e funcionários
+
+     SELECT
+       C.DESCRICAO AS CARGO,
+       F.NOME AS FUNCIONARO
+     FROM
+       CARGOS C
+     INNER JOIN
+       FUNCIONARIOS F ON (F.CODIGO_CARGO = C.CODIGO);
+
+
+  c) Gerar uma relação contendo setores, cargos e funcionários
+
+     SELECT
+       S.DESCRICAO AS SETOR,
+       C.DESCRICAO AS CARGO,
+       F.NOME AS FUNCIONARIO
+     FROM
+       SETORES S
+     INNER JOIN
+       CARGOS C ON (C.CODIGO_SETOR = S.CODIGO)
+     INNER JOIN
+       FUNCIONARIOS F ON (F.CODIGO_CARGO = C.CODIGO);
+
+
+  d) Gerar uma relação de TODOS os setores, cargos e funcionários
+
+     SELECT
+       S.DESCRICAO AS SETOR,
+       C.DESCRICAO AS CARGO,
+       F.NOME AS FUNCIONARIO
+     FROM
+       SETORES S
+     LEFT OUTER JOIN
+       CARGOS C ON (C.CODIGO_SETOR = S.CODIGO)
+     LEFT OUTER JOIN
+       FUNCIONARIOS F ON (F.CODIGO_CARGO = C.CODIGO);
+
+
+  e) Gerar uma relação contendo a quantidade de cargos por setor
+
+    SELECT
+      S.DESCRICAO AS SETOR,
+      COUNT(C.CODIGO) AS "TOTAL CARGOS"
+    FROM
+      SETORES S
+    INNER JOIN
+      CARGOS C ON (C.CODIGO_SETOR = S.CODIGO)
+    GROUP BY
+      S.DESCRICAO;
+
+
+  f) Gerar uma relação contendo a quantidade de funcionários por sexo
+
+     SELECT
+       F.SEXO AS SEXO,
+       COUNT(F.SEXO) TOTAL
+     FROM
+       FUNCIONARIOS F
+     GROUP BY
+       F.SEXO;
+

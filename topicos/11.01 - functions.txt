@@ -1,0 +1,266 @@
+====================================================================================================
+CURSO MYSQL FUNDAMENTOS - FUNCTIONS
+====================================================================================================
+
+
+Definição
+----------------------------------------------------------------------------------------------------
+Uma function é um bloco de comandos SQL utilizado em instruções SELECT.
+
+
+Tipos
+----------------------------------------------------------------------------------------------------
+- Funções do MySQL
+- Funções definidas pelo usuário
+
+
+Funções do MySQL
+----------------------------------------------------------------------------------------------------
+- Funções de agregação
+- Funções de arredondamento
+- Funções de data
+
+
+Funções de agregação
+----------------------------------------------------------------------------------------------------
+- COUNT
+
+  Retorna a quantidade de registros.
+
+  Exemplo:
+
+    mysql> SELECT COUNT(codigo) FROM produtos;
+
+- SUM
+
+  Retorna o somatório do conteúdo de um deteminado campo.
+
+  Exemplo:
+
+    mysql> SELECT SUM(valor_unitario) FROM produtos;
+
+- AVG
+
+  Retorna a média aritmética de um determinado campo.
+
+  Exemplo:
+
+    mysql> SELECT AVG(valor_unitario) FROM produtos;
+
+- MIN
+
+  Retorna o valor mínimo de um deteminado campo.
+
+  Exemplo:
+
+    mysql> SELECT MIN(valor_unitario) FROM produtos;
+
+- MAX
+
+  Retorna o valor máximo de um deteminado campo.
+
+  Exemplo:
+
+    mysql> SELECT MAX(valor_unitario) FROM produtos;
+
+
+Funções arredondamento
+----------------------------------------------------------------------------------------------------
+- CEIL
+
+  Arredonda um número decimal para cima, independente dos decimais
+
+  Exemplo:
+
+    mysql> SELECT CEIL(56.7);
+
+- FLOOR
+
+  Arredonda um número decimal para baixo, independente dos decimais
+
+  Exemplo:
+
+    mysql> SELECT FLOOR(56.7);
+
+- ROUND
+
+  Arredonda para o inteiro mais próximo, levando em consideração as casas decimais
+
+  Exemplo:
+
+    mysql> SELECT ROUND(56.7);
+
+
+Funções de data
+----------------------------------------------------------------------------------------------------
+- STR_TO_DATE
+
+  Converte uma data no formato string para o formato data.
+
+  Sintaxe:
+
+    STR_TO_DATE(string, formato)
+
+  Exemplos:
+
+    mysql> SELECT STR_TO_DATE('21,5,2013','%d,%m,%Y');
+    mysql> SELECT STR_TO_DATE('21,5,2013 extra characters','%d,%m,%Y');  -- A função 'str_to_date' ignora os caracteres extras após a data
+    mysql> SELECT STR_TO_DATE('113005','%h%i%s');
+    mysql> SELECT STR_TO_DATE('20130101 1130','%Y%m%d %h%i');
+
+
+- DATE_FORMAT
+
+  Format uma determinda data.
+
+  Sintaxe:
+
+    DATE_FORMAT(data, formato)
+
+  Exemplos:
+
+    mysql> SELECT DATE_FORMAT("2020-06-01", "%m/%d/%Y");
+
+
+Funções definidas pelo usuário
+----------------------------------------------------------------------------------------------------
+DELIMITER $$
+CREATE FUNCTION <nome-funcao>(<parametros>) RETURNS <tipo-retorno>
+BEGIN
+  RETURN <comandos>;
+END $$
+DELIMITER; 
+
+Exemplo
+
+  ...
+
+
+====================================================================================================
+EXERCÍCIOS
+====================================================================================================
+
+Exercício 01 - Relatórios de Vendas
+----------------------------------------------------------------------------------------------------
+
+Instruções
+
+- Utilizar o banco de dados Vendas
+
+- Listar o produto mais caro de cada categoria. Na listagem deve conter a categoria, a descrição e o 
+  preço do produto.
+
+- Criar uma listagem onde apareça a sigla do estado e os clientes separados por vírgula.
+
+- Criar uma listagem contendo o código, nome e o gênero de cada cliente. Na listagem o gênero deve 
+  aparecer por extenso.
+
+- Criar uma listagem contendo a quantidade de produtos que cada cliente consumiu.
+
+  Obs1. A listagem deve incluir também os clientes que não compraram nada. 
+  Obs2. As colunas da listagem devem ter os nomes 'Cliente' e 'Qtde Produtos Comprados'
+
+- Criar uma listagem contendo o total das vendas por mês
+
+- Alterar a consulta anterior de tal forma que o mês seja exibido por extenso
+     
+
+====================================================================================================
+RESPOSTAS EXERCÍCIOS
+====================================================================================================
+
+Exercício 01 - Relatórios de Vendas
+----------------------------------------------------------------------------------------------------
+
+- Listar o produto mais caro de cada categoria. Na listagem deve conter a categoria, a descrição e o 
+  preço do produto.
+
+  ???
+
+
+- Criar uma listagem onde apareça a sigla do estado e os clientes separados por vírgula.
+
+  SELECT
+    uf, GROUP_CONCAT(nome)
+  FROM
+    clientes
+  GROUP BY
+    uf;
+
+
+- Criar uma listagem contendo o código, nome e o gênero de cada cliente. Na listagem o gênero deve 
+  aparecer por extenso.
+
+  SELECT
+    codigo, nome, IF(genero = 'M', 'Masculino', 'Feminino')
+  FROM
+    clientes;
+
+
+- Criar uma listagem contendo a quantidade de produtos que cada cliente consumiu.
+
+  Obs1. A listagem deve incluir também os clientes que não compraram nada. 
+  Obs2. As colunas da listagem devem ter os nomes 'Cliente' e 'Qtde Produtos Comprados'
+
+  SELECT
+    c.nome AS 'Cliente', COUNT(vi.codigo_produto) AS 'Qtde Produtos Comprados'
+  FROM
+    clientes c
+  LEFT JOIN
+    vendas v ON (v.codigo_cliente = c.codigo)
+  LEFT JOIN
+    vendas_itens vi ON (vi.codigo_venda = v.codigo)
+  GROUP BY
+    c.nome;
+
+
+- Criar uma listagem contendo o total das vendas por mês
+
+  SELECT
+    EXTRACT(MONTH FROM v.data_venda), SUM(vi.quantidade * vi.preco)
+  FROM
+    vendas v
+  INNER JOIN
+    vendas_itens vi ON (vi.codigo_venda = v.codigo)
+  GROUP BY
+    EXTRACT(MONTH FROM v.data_venda);
+
+
+- Alterar a consulta anterior de tal forma que o mês seja exibido por extenso
+
+  DELIMITER $$
+  CREATE FUNCTION mes_por_extenso(mes TINYINT) RETURNS VARCHAR(20)
+  BEGIN
+    DECLARE nome_mes VARCHAR(20);
+
+    CASE mes
+      WHEN 1 THEN SET nome_mes = 'janeiro';
+      WHEN 2 THEN SET nome_mes = 'fevereiro';
+      WHEN 3 THEN SET nome_mes = 'março';
+      WHEN 4 THEN SET nome_mes = 'abril';
+      WHEN 5 THEN SET nome_mes = 'maio';
+      WHEN 6 THEN SET nome_mes = 'junho';
+      WHEN 7 THEN SET nome_mes = 'julho';
+      WHEN 8 THEN SET nome_mes = 'agosto';
+      WHEN 9 THEN SET nome_mes = 'setembro';
+      WHEN 10 THEN SET nome_mes = 'outubro';
+      WHEN 11 THEN SET nome_mes = 'novembro';
+      WHEN 12 THEN SET nome_mes = 'dezembro';
+      ELSE SET nome_mes = 'inválido';
+    END CASE;
+
+    RETURN nome_mes;
+  END $$
+  DELIMITER ;
+
+
+  SELECT
+    MES_POR_EXTENSO(EXTRACT(MONTH FROM v.data_venda)) AS 'Mês',
+    SUM(vi.quantidade * vi.preco) AS 'Total Vendido'
+  FROM
+    vendas v
+  INNER JOIN
+    vendas_itens vi ON (vi.codigo_venda = v.codigo)
+  GROUP BY
+    1;
+

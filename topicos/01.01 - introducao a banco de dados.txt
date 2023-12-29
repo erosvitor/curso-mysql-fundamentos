@@ -1,0 +1,61 @@
+====================================================================================================
+CURSO MYSQL FUNDAMENTOS - INTRODUÇÃO A BANCO DE DADOS
+====================================================================================================
+
+
+O que é banco de dados
+----------------------------------------------------------------------------------------------------
+Um banco de dados é uma coleção de dados centralizados e organizados numa determinada estrutura de 
+armazenamento. Exemplos de bancos de dados encontrados no dia-a-dia: agenda telefônica, uma caixa 
+com várias bulas de medicamentos e fichas dos clientes de uma determinada clínica.
+
+
+Dados vs Informação
+----------------------------------------------------------------------------------------------------
+O dado é um elemento isolado e sem sentido. Por exemplo, joão, amarela e banana são dados e não 
+dizem muita coisa quando analisados separadamente. Se aqueles dados forem agrupados para formar a 
+frase João gosta de banana amarela, surge uma informação. Com base na informação, é possível tomar 
+decisões ou tirar conclusões sobre os hábitos e costumes do João.
+
+
+Modelos
+----------------------------------------------------------------------------------------------------
+- Modelo hierárquico
+- Modelo em rede
+- Modelo relacional
+
+
+Modelo Relacional
+----------------------------------------------------------------------------------------------------
+Proposto por Edgar Frank Codd no fim dos anos 60, o modelo relacional utiliza a teoria dos conjuntos
+e a álgebra relacional como base para definir como os dados serão armazenados e organizados.
+
+Base do modelo relacional, a tabela é uma estrutura composta por linhas e colunas onde os dados são
+armazenados. Uma tabela que armazena dados sobre clientes de uma determinada loja, terá os clientes
+formando as linhas da tabela e os dados de cada cliente formarão as colunas da tabela. As linhas são
+chamadas de registros e as colunas são chamadas de campos.
+
+
+Conceitos chaves do Modelo Relacional
+----------------------------------------------------------------------------------------------------
+Chave primária
+Cada registro em uma determinada tabela precisa ter uma forma de ser identificado e diferenciado dos
+demais registros. Esta identificação e diferenciação é feita por meio da seleção de um ou mais campos
+da tabela. Os campos selecionados recebem o nome de chave primária.
+
+Chave secundária (chave estrangeira)
+Para que duas ou mais tabelas podem se relacionar no modelo relacional, é preciso que a chave primária
+de uma das tabelas esteja presente nas outras tabelas envolvidas no relacionamente. Quando uma tabela
+recebe um campo que é a chave primária de outra tabela, o campo recebe o nome de chave secundária (ou
+chave estrangeira)
+
+Índice
+Um índice é um ou mais campos previamente selecionado(s) para agilizar a localização de um determinado
+registro na tabela.
+
+Integridade referencial
+A integridade referencial são regras que garantem a integridade do relacionamento entre duas ou mais 
+tabelas. Por exemplo, entre as tabelas Clientes e Pedidos, pode existir uma regra de integridade 
+referencial que impeça que um cliente seja removido da tabela Clientes se existirem registros na tabela
+Pedidos referentes ao cliente.
+

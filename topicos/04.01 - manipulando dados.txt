@@ -1,0 +1,241 @@
+====================================================================================================
+CURSO MYSQL FUNDAMENTOS - MANIPULANDO DADOS
+====================================================================================================
+
+
+Banco de dados exemplo
+----------------------------------------------------------------------------------------------------
+Para este tópico será utilizado um novo banco de dados chamado 'rh' que será criado com o script
+abaixo.
+
+
+CREATE DATABASE rh CHARACTER SET = 'utf8' COLLATE = 'utf8_general_ci';
+
+USE rh;
+
+CREATE TABLE funcionarios (
+  codigo int NOT NULL AUTO_INCREMENT,
+  nome VARCHAR(80) NOT NULL,
+  salario DECIMAL(7,2) NOT NULL,
+  cargo CHAR(20) NOT NULL,
+  genero ENUM('F', 'M') NOT NULL,
+  PRIMARY KEY (codigo)
+);
+
+
+Inserção de dados
+----------------------------------------------------------------------------------------------------
+Preencher todos os campos
+
+  INSERT INTO <nome-tabela> (<campo1, campo2, .., campoN>) VALUES (<valor1, valor2, .., valorN>);
+
+  Exemplo
+
+    INSERT INTO funcionarios (codigo, nome, salario, cargo, genero)
+    VALUES (1, 'Fulano da Silva', 2800.00, 'Operador de máquina', 'M');
+
+  ou 
+
+    INSERT INTO funcionarios VALUES (2, 'Beltrano Gomes', 3000.00, 'Programador', 'M');
+
+
+Não informar a chave primária
+
+  Exemplo
+
+    INSERT INTO funcionarios (nome, salario, cargo, genero)
+    VALUES ('Siclano Pereira', 1000.00, 'Estagiário', 'M');
+
+
+Seleção de dados
+----------------------------------------------------------------------------------------------------
+Selecionar todos os dados da tabela
+
+  SELECT campo1, campo2, ..., campoN FROM <nome-tabela>;
+
+  Exemplo
+
+    SELECT codigo, nome, salario, cargo, genero FROM funcionarios;
+
+
+Caractere '*'
+
+  Exemplo
+
+    SELECT * FROM funcionarios;
+
+
+Restringindo os campos
+
+  Exemplo
+
+    SELECT nome, cargo FROM funcionarios;
+
+
+Alteração de dados
+----------------------------------------------------------------------------------------------------
+Alterando o valor de um determinado campo
+
+  UPDATE <nome-tabela> SET <nome-campo> = <novo-valor> WHERE <campo-chave> = <valor>;
+
+  Exemplo
+
+    UPDATE funcionarios SET salario = 1200.00 WHERE codigo = 3;
+
+
+Alterando todos os registros
+
+  UPDATE <nome-tabela> SET <nome-campo> = <novo-valor>;
+
+  Exemplo
+
+    UPDATE funcionarios SET salario = salario + (salario * 0.05);
+  
+
+Exclusão de dados
+----------------------------------------------------------------------------------------------------
+Excluindo um determinado registro
+
+  DELETE FROM <nome-tabela> WHERE <campo-chave> = <valor>;
+
+  Exemplo
+
+    DELETE FROM funcionarios WHERE codigo = 3;
+
+
+Excluindo todos os registros
+
+  DELETE FROM <nome-tabela>;
+
+  Exemplo
+
+    DELETE FROM funcionarios;
+
+
+Resetando o campo autoincrementável
+
+  TRUNCATE <nome-tabela>;
+
+  Exemplo
+
+    TRUNCATE funcionarios;
+
+
+====================================================================================================
+EXERCÍCIOS
+====================================================================================================
+
+Exercício 01 - Banco de dados Lanchonete
+----------------------------------------------------------------------------------------------------
+Criar um banco de dados para armazenar produtos de uma lanchonete.
+
+Instruções:
+
+- Criar um banco de dados chamado 'lanchonete'
+
+- Criar uma tabela chamada 'produtos' usando o código abaixo
+
+  CREATE TABLE produtos
+  (
+    codigo INT NOT NULL PRIMARY KEY,
+    categoria VARCHAR(30) NOT NULL,
+    descricao VARCHAR(60) NOT NULL,
+    preco DECIMAL(8,2) NOT NULL
+  );
+
+- Popular a tabela 'produtos' executando os comandos abaixo
+
+  INSERT INTO produtos VALUES (1, 'Salgados', 'Coxinha', 3.80);
+  INSERT INTO produtos VALUES (2, 'Salgados', 'Pastel Carne', 2.50);
+  INSERT INTO produtos VALUES (3, 'Bebidas', 'Coca-Cola Lata', 3.20);
+  INSERT INTO produtos VALUES (4, 'Bebidas', 'Coca-Cola Litro', 4.00);
+  INSERT INTO produtos VALUES (5, 'Sanduiches', 'X-Salada', 5.50);
+
+- Alterar os registros que contem o campo categoria igual a 'Bebidas' para 'Refrigerantes'
+
+- Inserir os seguintes novos produtos 
+
+	Sanduiches, X-Frango, 6.00
+	Sanduiches, X-Egg, 5.70
+	Refrigerantes, Fanta Laranja Lata, 3.00
+
+- Reajustar o preço de todos os produtos em 10%
+
+- Excluir o produto 'Pastel de Carne'
+
+- Reajustar o preço dos refrigerantes em 5%
+
+
+Exercício 02 - Truncate e Delete From
+----------------------------------------------------------------------------------------------------
+Qual a diferença entre os comandos 'truncate' e 'delete from'?
+
+
+====================================================================================================
+RESPOSTAS EXERCÍCIOS
+====================================================================================================
+
+Exercício 01 - Banco de dados Lanchonete
+----------------------------------------------------------------------------------------------------
+
+- Criar um banco de dados chamado 'lanchonete'
+
+  CREATE DATABASE lanchonete;
+
+
+- Criar uma tabela chamada 'produtos' usando o código abaixo
+
+  CREATE TABLE produtos
+  (
+    codigo INT NOT NULL PRIMARY KEY,
+    categoria VARCHAR(30) NOT NULL,
+    descricao VARCHAR(60) NOT NULL,
+    preco DECIMAL(8,2) NOT NULL
+  );
+
+
+- Popular a tabela 'produtos' executando os comandos abaixo
+
+  INSERT INTO produtos VALUES (1, 'Salgados', 'Coxinha', 3.80);
+  INSERT INTO produtos VALUES (2, 'Salgados', 'Pastel Carne', 2.50);
+  INSERT INTO produtos VALUES (3, 'Bebidas', 'Coca-Cola Lata', 3.20);
+  INSERT INTO produtos VALUES (4, 'Bebidas', 'Coca-Cola Litro', 4.00);
+  INSERT INTO produtos VALUES (5, 'Sanduiches', 'X-Salada', 5.50);
+
+
+- Alterar os registros que contem o campo categoria igual a 'Bebidas' para 'Refrigerantes'
+
+  UPDATE produtos SET categoria = 'Refrigerantes' WHERE categoria = 'Bebidas';
+
+
+- Inserir os seguintes novos produtos 
+
+	Sanduiches, X-Frango, 6.00
+	Sanduiches, X-Egg, 5.70
+	Refrigerantes, Fanta Laranja Lata, 3.00
+
+  INSERT INTO produtos VALUES (6, 'Sanduiches', 'X-Frango', 6.00);
+  INSERT INTO produtos VALUES (7, 'Sanduiches', 'X-Egg', 5.70);
+  INSERT INTO produtos VALUES (8, 'Refrigerantes', 'Fanta Laranja', 3.00);
+
+
+- Reajustar o preço de todos os produtos em 10%
+
+  UPDATE produtos SET preco = preco + (preco * 0.10);
+
+
+- Excluir o produto 'Pastel de Carne'
+
+  DELETE FROM produtos WHERE descricao = 'Pastel de Carne';
+
+
+- Reajustar o preço dos refrigerantes em 5%
+
+  UPDATE produtos SET preco = preco + (preco * 0.05) WHERE categoria = 'Refrigerantes';
+
+
+Exercício 02 - Truncate e Delete From
+----------------------------------------------------------------------------------------------------
+O comando TRUNCATE apaga todos os registros da tabela e reseta o campo auto-incremento. Já o comando
+DELETE FROM apenas apaga todos os registros da tabela.
+

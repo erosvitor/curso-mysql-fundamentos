@@ -1,0 +1,357 @@
+====================================================================================================
+CURSO MYSQL FUNDAMENTOS - STORED PROCEDURES
+====================================================================================================
+
+
+Banco de dados exemplo
+----------------------------------------------------------------------------------------------------
+Para este tópico criar um banco de dados chamado 'storedprocedures'.
+
+
+Definição
+----------------------------------------------------------------------------------------------------
+Uma stored procedure é um bloco contendo uma ou mais instruções SQL que fica armazenado dentro do 
+banco de dados e é utilizado para a execução de uma determinada tarefa.
+
+
+Benefícios
+----------------------------------------------------------------------------------------------------
+- Centralização
+- Segurança
+- Velocidade
+
+
+Sintaxe
+----------------------------------------------------------------------------------------------------
+DELIMITER $$
+CREATE PROCEDURE <nome-procedure>([parametros])
+BEGIN
+  <instruções SQL>
+END $$
+DELIMITER ;
+  
+Exemplo
+
+  DELIMITER $$
+  CREATE PROCEDURE sp_dataatual()
+  BEGIN
+    SELECT NOW();
+  END $$
+  DELIMITER ;
+
+
+Executando
+----------------------------------------------------------------------------------------------------
+CALL <nome-procedure>;
+
+Exemplo
+
+  CALL sp_dataatual();
+  
+ 
+Excluindo procedure
+----------------------------------------------------------------------------------------------------
+DROP PROCEDURE <nome-procedure>;
+
+Exemplo
+
+  DROP PROCEDURE sp_dataatual;
+
+
+Stored procedure com parâmetros
+----------------------------------------------------------------------------------------------------
+DELIMITER $$
+CREATE PROCEDURE <nome-procedure>(IN <nome-param tipo-dado>)
+BEGIN
+  <instruções SQL>
+END $$
+DELIMITER ;
+  
+Exemplo
+
+  DELIMITER $$
+  CREATE PROCEDURE sp_boasvindas(IN param VARCHAR(30))
+  BEGIN
+    SELECT CONCAT("Seja bem vindo ", param, "!!!");
+  END $$
+  DELIMITER ;
+
+
+Executando stored procedure que recebe parâmetro
+----------------------------------------------------------------------------------------------------
+CALL <nome-procedure(<parâmetro>);
+
+Exemplo
+
+  CALL sp_boasvindas("Fulano da Silva");
+
+
+Stored Procedure retornando valor
+----------------------------------------------------------------------------------------------------
+DELIMITER $$
+CREATE PROCEDURE <nome-procedure>(OUT <nome-retorno tipo-dado>)
+BEGIN
+  <instrução SQL> INTO <nome-retorno>;
+END $$
+DELIMITER ;
+
+Exemplo
+
+  DELIMITER $$
+  CREATE PROCEDURE sp_valorPI(OUT resultado DECIMAL(6,4))
+  BEGIN
+    SELECT 3.1415 INTO resultado;
+  END $$
+  DELIMITER ;
+
+Executando Stored Procedure Retornando Valor
+
+  CALL sp_valorPI(@PI);
+  SELECT @PI;
+
+
+Stored Procedure com parametro e retorno
+----------------------------------------------------------------------------------------------------
+DELIMITER $$
+CREATE PROCEDURE <nome-procedure>(IN <nome-param tipo-dado>, ..., 
+                                  OUT <nome-retorno tipo-dado>)
+BEGIN
+  <instrução SQL> INTO <nome-retorno>;
+END $$
+DELIMITER ;
+
+Exemplo
+
+  DELIMITER $$
+  CREATE PROCEDURE sp_areacirculo(IN raio DECIMAL(8,2), OUT area DECIMAL(8,2))
+  BEGIN
+    SELECT (3.1415 * (raio*raio)) INTO area;
+  END $$
+  DELIMITER ;
+
+  
+  CALL sp_areacirculo(5.20, @area);
+  SELECT @area;
+
+
+Variáveis em stored procedures
+----------------------------------------------------------------------------------------------------
+DECLARE <nome-variável> <tipo-dado><opções de declaração>;
+SET <nome-variável> = <valor>;
+
+Exemplo
+
+  DELIMITER $$
+  CREATE PROCEDURE sp_variaveis()
+  BEGIN
+    DECLARE numero INT;
+
+    SET numero = 100;
+
+    SELECT numero;
+  END $$
+  DELIMITER ;
+
+  
+  CALL sp_variaveis();
+
+
+Estruturas decisão em stored procedures
+----------------------------------------------------------------------------------------------------
+IF (<condicao>) THEN
+  <comandos>;
+ELSE
+  <comandos>;
+END IF
+
+Exemplo
+
+  DELIMITER $$
+  CREATE PROCEDURE sp_idade(IN idade INT)
+  BEGIN
+    IF (idade >= 18) THEN
+      SELECT "Maior de idade";
+    ELSE
+      SELECT "Menor de idade";
+    END IF;
+  END $$
+  DELIMITER ;
+
+
+CASE
+WHEN <condicao_1> THEN
+  <comandos>
+WHEN <condicao_2> THEN
+  <comandos>
+ELSE
+  <comandos>
+END CASE;  
+
+Exemplo
+
+  DELIMITER $$
+  CREATE PROCEDURE sp_diasemana(IN dia_semana INT)
+  BEGIN
+    DECLARE nome_dia CHAR(15);
+    CASE
+      WHEN dia_semana = 1 THEN
+        SET nome_dia = "domingo"; 
+      WHEN dia_semana = 2 THEN
+        SET nome_dia = "segunda"; 
+      WHEN dia_semana = 3 THEN
+        SET nome_dia = "terça"; 
+      WHEN dia_semana = 4 THEN
+        SET nome_dia = "quarta"; 
+      WHEN dia_semana = 5 THEN
+        SET nome_dia = "quinta"; 
+      WHEN dia_semana = 6 THEN
+        SET nome_dia = "sexta"; 
+      WHEN dia_semana = 7 THEN
+        SET nome_dia = "sábado";
+      ELSE
+        SET nome_dia = "dia inválido"; 
+    END CASE;
+    SELECT nome_dia;
+  END $$
+  DELIMITER ;
+
+
+Estruturas repetição em stored procedures
+----------------------------------------------------------------------------------------------------
+WHILE <condicao> DO
+  <comandos>
+END WHILE
+
+Exemplo
+
+  DELIMITER $$
+  CREATE PROCEDURE sp_while(IN quantidade INT)
+  BEGIN
+    DECLARE inicio INT;
+    DECLARE str VARCHAR(200);
+    
+    SET inicio = 1;
+    SET str = '';
+
+    WHILE (inicio < quantidade) DO
+      SET str = CONCAT(str, inicio, ',');
+      SET inicio = inicio + 1;
+    END WHILE;
+
+    SELECT str;
+  END $$
+  DELIMITER ;
+
+
+====================================================================================================
+EXERCICIOS
+====================================================================================================
+
+Exercício 01 - Controle Bancário
+----------------------------------------------------------------------------------------------------
+Criar um banco de dados contendo stored procedures para um controle bancário.
+
+Instruções:
+
+- Criar um banco de dados chamado 'controlebancario'
+
+- Criar uma tabela chamada 'contas' contendo os seguintes campos:
+
+  banco, agencia, conta, saldo
+
+- Criar uma stored procedure que receba os dados da conta como parâmetros e depois insira na tabela 
+  'contas' criando assim uma nova conta bancária.
+
+- Criar uma stored procedure para realizar a operação de depósito.
+
+- Criar uma stored procedure para realizar a operação de saque.
+
+- Criar uma stored procedure para realizar a operação de transferência.
+
+
+====================================================================================================
+RESPOSTAS EXERCICIOS
+====================================================================================================
+
+Exercício 01 - Controle Bancário
+----------------------------------------------------------------------------------------------------
+
+- Criar um banco de dados chamado 'controlebancario'
+
+  CREATE DATABASE controlebancario;
+
+
+- Criar uma tabela chamada 'contas' contendo os seguintes campos:
+
+  banco, agencia, conta, saldo
+
+  CREATE TABLE contas
+  (
+    codigo INT NOT NULL AUTO_INCREMENT,
+    banco VARCHAR(40) NOT NULL,
+    agencia CHAR(10) NOT NULL,
+    numero CHAR(10) NOT NULL,
+    saldo NUMERIC(14,2) NOT NULL,
+    PRIMARY KEY (codigo)
+  );
+
+
+- Criar uma stored procedure que receba os dados da conta como parâmetros e
+  depois insira na tabela 'contas' criando assim uma nova conta bancária.
+
+  DELIMITER $$
+  CREATE PROCEDURE sp_abrir_conta(IN banco VARCHAR(40), IN agencia CHAR(10), IN numero CHAR(10), IN saldo NUMERIC(14,2))
+  BEGIN
+    INSERT INTO contas (banco, agencia, numero, saldo)
+    VALUES (banco, agencia, numero, saldo);
+  END $$
+  DELIMITER ;
+
+
+- Criar uma stored procedure para realizar a operação de depósito.
+
+  DELIMITER $$
+  CREATE PROCEDURE sp_depositar(IN conta CHAR(10), IN valor NUMERIC(14,2))
+  BEGIN
+    UPDATE contas SET saldo = saldo + valor WHERE numero = conta;
+  END $$
+  DELIMITER ;
+
+
+- Criar uma stored procedure para realizar a operação de saque.
+
+  DELIMITER $$
+  CREATE PROCEDURE sp_sacar(IN conta CHAR(10), IN valor NUMERIC(14,2), OUT resultado VARCHAR(60))
+  BEGIN
+    DECLARE saldo_atual NUMERIC(14,2);
+
+    SELECT saldo INTO saldo_atual FROM contas WHERE numero = conta;
+
+    IF (saldo_atual >= valor) THEN
+      UPDATE contas SET saldo = saldo - valor WHERE numero = conta;
+      SELECT 'Saque realizado com sucesso!' INTO resultado;
+    ELSE
+      SELECT 'Saque não realizado. Saldo insuficiente!' INTO resultado;
+    END IF;
+  END $$
+  DELIMITER ;
+
+- Criar uma stored procedure para realizar a operação de transferência.
+
+  DELIMITER $$
+  CREATE PROCEDURE sp_transferir(IN conta_origem CHAR(10), IN conta_destino CHAR(10), IN valor NUMERIC(14,2), OUT resultado VARCHAR(60))
+  BEGIN
+    DECLARE saldo_atual NUMERIC(14,2);
+  
+    SELECT saldo INTO saldo_atual FROM contas WHERE numero = conta_origem;
+  
+    IF (saldo_atual >= valor) THEN
+      UPDATE contas SET saldo = saldo - valor WHERE numero = conta_origem;
+      UPDATE contas SET saldo = saldo + valor WHERE numero = conta_destino;
+      SELECT "Transferencia realizada" INTO resultado;
+    ELSE
+      SELECT "Transferencia não realizada. Saldo insuficiente" INTO resultado;
+    END IF;
+  END $$
+  DELIMITER ;
+

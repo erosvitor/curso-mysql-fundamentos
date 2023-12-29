@@ -1,0 +1,38 @@
+====================================================================================================
+CURSO MYSQL FUNDAMENTOS - BACKUP E RESTORE
+====================================================================================================
+
+
+Criando backup
+----------------------------------------------------------------------------------------------------
+$ mysqldump -u <nome-usuario> -p<senha-usuario> <nome-banco-de-dados> > <nome-backup>
+
+Exemplo:
+  mysqldump -u root -proot agenda > /home/eros/agenda-mysql.dump
+
+
+Restaurando backup
+----------------------------------------------------------------------------------------------------
+$ mysqladmin -u <nome-usuario> -p<senha-usuario> create <nome-banco-de-dados>
+$ mysql -u <nome-usuario> -p<senha-usuario> <nome-banco-de-dados> < <nome-backup>
+
+Exemplo:
+  mysqladmin -u root -proot create agenda
+  mysql -u root -proot agenda < /home/eros/agenda-mysql.dump
+
+
+Exportando apenas o schema
+----------------------------------------------------------------------------------------------------
+$ mysqldump -u <usuario> -p<senha> --no-data <nome-banco-de-dados> > <nome-aquivo>
+
+Exemplo:
+  mysqldump -u root -proot --no-data agenda > /home/eros/agenda-mysql.schema
+
+
+Exportando apenas os dados
+----------------------------------------------------------------------------------------------------
+$ mysqldump -u <usuario> -p<senha> --no-create-info --skip-triggers <nome-banco-de-dados> > <nome-aquivo>
+
+Exemplo:
+  mysqldump -u root -proot --no-create-info --skip-triggers agenda > /home/eros/agenda-mysql.data
+

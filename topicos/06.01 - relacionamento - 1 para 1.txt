@@ -1,0 +1,276 @@
+====================================================================================================
+CURSO MYSQL FUNDAMENTOS - RELACIONAMENTO 1 PARA 1
+====================================================================================================
+
+
+Banco de dados exemplo
+----------------------------------------------------------------------------------------------------
+Para este tópico será utilizado um novo banco de dados chamado 'clientes' que sera criado logo abaixo.
+
+
+Definição
+----------------------------------------------------------------------------------------------------
+O relacionamento 1 para 1 ocorre quando um registro de uma tabela se relaciona com um único registro
+de uma outra tabela. Normalmente este relacionamento se aplica quando uma tabela possui muitos campos
+e alguns dos campos são utilizados com menos frequencia do que os demais.
+
+Exemplo
+
+  Dados de Clientes
+    Nome, CPF, RG, Observação*
+
+  Aplicando o relacionamento 1 para 1
+
+    Tabela Clientes
+      Nome, CPF, RG
+
+    Tabela Documentos
+      Observação
+
+
+Chave estrangeira
+----------------------------------------------------------------------------------------------------
+O relacionamento 1 para 1 entre duas tabelas é estabelecido da seguinte maneira:
+- Na tabela 1 define-se um campo como chave primária
+- Na tabela 2 adiciona-se um campo extra sendo do mesmo tipo e tamanho do campo
+  que foi definido como chave primária na tabela 1
+- O campo adicionado na segunda tabela chama-se chave estrangeira 
+
+Exemplo
+
+  Tabela Clientes
+    Código, Nome, CPF, RG
+
+  Tabela Observações
+    Código Cliente, Observação
+
+
+Definindo o código SQL
+----------------------------------------------------------------------------------------------------
+CREATE DATABASE clientes;
+
+USE clientes;
+
+CREATE TABLE clientes (
+  codigo INT NOT NULL AUTO_INCREMENT,
+  nome VARCHAR(80) NOT NULL,
+  cpf CHAR(14) NOT NULL,
+  rg CHAR(11) NOT NULL,
+  PRIMARY KEY (codigo)
+);
+
+CREATE TABLE clientes_observacao (
+  codigo_cliente INT NOT NULL,
+  observacao TEXT NOT NULL,
+  PRIMARY KEY (codigo_cliente),
+  FOREIGN KEY (codigo_cliente) REFERENCES clientes (codigo)
+);
+
+
+Nomeando as chaves primárias e estrangeiras
+----------------------------------------------------------------------------------------------------
+CREATE DATABASE clientes;
+
+USE clientes;
+
+CREATE TABLE clientes (
+  codigo INT NOT NULL AUTO_INCREMENT,
+  nome VARCHAR(80) NOT NULL,
+  cpf CHAR(14) NOT NULL,
+  rg CHAR(11) NOT NULL,
+  CONSTRAINT pk_clientes PRIMARY KEY (codigo)
+);
+
+CREATE TABLE clientes_observacao (
+  codigo_cliente INT NOT NULL,
+  observacao TEXT NOT NULL,
+  CONSTRAINT pk_clientes_observacao PRIMARY KEY (codigo_cliente),
+  CONSTRAINT fk_clientes_observacao_clientes FOREIGN KEY (codigo_cliente) REFERENCES clientes (codigo)
+);
+
+
+Inserindo dados
+----------------------------------------------------------------------------------------------------
+Inserir primeiramente na tabela 1
+
+  INSERT INTO clientes VALUES (1, 'Fulano da Silva', '122333444455', '122333444');
+
+Depois inserir na tabela 2 usando o código do cliente
+
+  INSERT INTO clientes_observacao VALUES (1, 'Curso de MySQL, tópico relacionamento 1:1');
+
+
+Selecionando dados
+----------------------------------------------------------------------------------------------------
+SELECT <campos> FROM <nome-tabela1> INNER JOIN <nome-tabela2> ON <campo-tabela2 = campo-tabela1>;
+
+Exemplo
+
+  SELECT codigo, nome, observacao FROM clientes 
+  INNER JOIN clientes_observacao ON (codigo_cliente = codigo);
+
+
+Excluindo dados
+----------------------------------------------------------------------------------------------------
+DELETE FROM <nome-tabela> WHERE <campo-chave> = <valor>;
+
+Exemplo
+
+  DELETE FROM clientes WHERE codigo = 1;
+
+  Ao executar o comando acima, é exibido o seguinte erro.
+
+  ERROR 1451 (23000): Cannot delete or update a parent row: a foreign key constraint fails 
+  (`teste`.`clientes_observacoes`, CONSTRAINT `clientes_observacoes_ibfk_1` FOREIGN KEY 
+  (`codigo_cliente`) REFERENCES `clientes` (`codigo`))
+
+  Solução
+
+    - Excluir primeiramente o registro da tabela 2 e depois excluir o registro da tabela 1
+    - Alterar a chave estrangeira
+
+
+Alterando a chave estrangeira
+----------------------------------------------------------------------------------------------------
+
+Exemplo
+
+    ALTER TABLE clientes_observacao DROP FOREIGN KEY fk_clientes_observacao_clientes;
+
+    ALTER TABLE clientes_observacao ADD CONSTRAINT fk_clientes_observacao_clientes
+    FOREIGN KEY (codigo_cliente) REFERENCES clientes (codigo) ON DELETE CASCADE ON UPDATE CASCADE; 
+
+
+Listando as chaves estrangeiras existentes
+----------------------------------------------------------------------------------------------------
+SELECT table_name, column_name, constraint_name 
+FROM information_schema.key_column_USAGE
+WHERE referenced_table_schema = 'clientes';
+
+
+====================================================================================================
+EXERCÍCIOS
+====================================================================================================
+
+Exercício 01 - Cadastro de Pessoas
+----------------------------------------------------------------------------------------------------
+Dado o levantamento inicial para um cadastro de pessoas, modelar os dados aplicando o relacionamento
+1 para 1 de tal modo que os dados sobre o endereço da pessoa fique numa tabela separada.
+
+  Dados levantados:
+    Nome, Telefone, Email, Logradouro, Bairro, Cidade, UF, CEP
+
+Instruções
+
+- Aplicar o relacionamento 1 para 1 separando os dados sobre o endereço numa 
+  tabela e os demais dados noutra tabela
+
+- Definir a chave primaria e a chave estrangeira para cada uma as tabelas
+
+- Definir nomes para a chave primária e para a chave estrangeira
+
+- Montar os scripts SQL para cada uma das tabelas
+
+- Criar um banco de dados chamado 'pessoas'
+
+- Aplicar os scripts SQL para que cada tabela seja criada
+
+- Criar instruções SQL INSERT para inserir 3 pessoas nas tabelas. Todos os dados
+  devem ser preenchidos
+
+- Criar uma instrução SQL SELECT para listar o nome, a cidade e o UF da pessoa
+
+- Adicionar um campo chamado 'complemento' na tabela que contem os dados sobre 
+  o endereço
+
+  Obs.: O campo deve aceitar no máximo 100 caracteres.
+
+
+====================================================================================================
+RESPOSTAS DOS EXERCÍCIOS
+====================================================================================================
+
+Exercício 01 - Cadastro de Pessoas
+----------------------------------------------------------------------------------------------------
+
+- Aplicar o relacionamento 1 para 1 separando os dados sobre o endereço numa 
+  tabela e os demais dados noutra tabela
+
+  Pessoas
+    Nome, Telefone, Email
+
+  Enderecos
+    Logradouro, Bairro, Cidade, UF, CEP
+
+
+- Definir a chave primaria e a chave estrangeira para cada uma as tabelas
+
+  Pessoas
+    Codigo, Nome, Telefone, Email
+
+  Enderecos
+    Codigo Pessoa, Logradouro, Bairro, Cidade, UF, CEP
+
+
+- Definir nomes para a chave primária e para a chave estrangeira
+
+  pk_pessoas
+  fk_pessoas_enderecos
+
+
+- Montar os scripts SQL para cada uma das tabelas
+
+  CREATE TABLE pessoas
+  (
+    codigo INT NOT NULL AUTO_INCREMENT,
+    nome VARCHAR(80) NOT NULL,
+    telefone CHAR(15) NOT NULL,
+    email VARCHAR(40) NULL,
+    CONSTRAINT pk_pessoas PRIMARY KEY (codigo)
+  );
+
+  CREATE TABLE pessoas_enderecos
+  (
+    codigo_pessoa INT NOT NULL,
+    logradouro VARCHAR(60) NOT NULL,
+    bairro VARCHAR(40) NOT NULL,
+    cidade VARCHAR(40) NOT NULL,
+    cep CHAR(9) NOT NULL,
+    uf CHAR(2) NOT NULL,
+    CONSTRAINT pk_pessoas_endereco PRIMARY KEY (codigo_pessoa),
+    CONSTRAINT fk_pessoas_endereco_pessoas FOREIGN KEY (codigo_pessoa) REFERENCES pessoas (codigo)
+      ON DELETE CASCADE ON UPDATE CASCADE
+  );
+
+- Criar um banco de dados chamado 'pessoas'
+
+  CREATE DATABASE pessoas;
+
+
+- Aplicar os scripts SQL para que cada tabela seja criada
+
+
+- Criar instruções SQL INSERT para inserir 3 pessoas nas tabelas. Todos os dados
+  devem ser preenchidos.
+
+  INSERT INTO pessoas VALUES (1, 'Fulano da Silva', '99977-0808', 'fulanosilva@yahoo.com.br');
+  INSERT INTO pessoas VALUES (2, 'Beltrano Gomes', '3244-0909', 'beltranog@hotmail.com');
+  INSERT INTO pessoas VALUES (3, 'Siclano Pereira', '98833-0101', 'spereira@yahoo.com.br');
+
+  INSERT INTO pessoas_enderecos VALUES (1, 'Rua KYZ, 901', 'Bairro 001', 'Criciúma', '67555-100', 'SC');
+  INSERT INTO pessoas_enderecos VALUES (2, 'Rua Sem nome, 210', 'Bairro Vila Nova', 'Curitiba', '81300-030', 'PR');
+  INSERT INTO pessoas_enderecos VALUES (3, 'Av Telhas, 454', 'Vila Esperança', 'Maringá', '72001-001', 'PR');
+
+
+- Criar uma instrução SQL SELECT para listar o nome, a cidade e o UF da pessoa
+
+  SELECT nome, cidade, uf FROM pessoas INNER JOIN pessoas_enderecos ON (codigo_pessoa = codigo);
+
+
+- Adicionar um campo chamado 'complemento' na tabela que contem os dados sobre 
+  o endereço.
+
+  Obs.: O campo deve aceitar no máximo 100 caracteres.
+
+  ALTER TABLE pessoas_enderecos ADD complemento VARCHAR(100) NULL;
+
